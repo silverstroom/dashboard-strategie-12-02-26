@@ -1,11 +1,13 @@
 import { Strategy, StrategyStatus } from "@/data/strategies";
 import { Plus, Copy } from "lucide-react";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 interface StrategyTableProps {
   strategies: Strategy[];
   activeFilter: StrategyStatus | "Tutte";
+  onEdit: (strategy: Strategy) => void;
+  onCreate: () => void;
+  onCopy: (strategy: Strategy) => void;
 }
 
 const statusBadgeMap: Record<StrategyStatus, { text: string; bg: string }> = {
@@ -17,21 +19,24 @@ const statusBadgeMap: Record<StrategyStatus, { text: string; bg: string }> = {
   "In pausa": { text: "text-status-pausa", bg: "bg-status-pausa-bg" },
 };
 
-const StrategyTable = ({ strategies, activeFilter }: StrategyTableProps) => {
+const formatDate = (dateStr: string) => {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit", year: "numeric" });
+};
+
+const formatImporto = (n: number) => `€${n.toLocaleString("it-IT")}`;
+
+const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy }: StrategyTableProps) => {
   const filtered =
     activeFilter === "Tutte"
       ? strategies
-      : strategies.filter((s) => s.stato === activeFilter);
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-  };
+      : strategies.filter((s) => s.stato_strategia === activeFilter);
 
   return (
     <div>
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-foreground">Strategie ({filtered.length})</h2>
-        <Button size="sm" className="gap-1.5">
+        <Button size="sm" className="gap-1.5" onClick={onCreate}>
           <Plus className="w-4 h-4" />
           Nuova Strategia
         </Button>
@@ -52,9 +57,9 @@ const StrategyTable = ({ strategies, activeFilter }: StrategyTableProps) => {
             </thead>
             <tbody>
               {filtered.map((strategy, index) => {
-                const badge = statusBadgeMap[strategy.stato];
-                const stripColor = strategy.tipo === "Social" ? "bg-social" : "bg-sito";
-                const typeBadge = strategy.tipo === "Social"
+                const badge = statusBadgeMap[strategy.stato_strategia];
+                const stripColor = strategy.tipo_strategia === "Social" ? "bg-social" : "bg-sito";
+                const typeBadge = strategy.tipo_strategia === "Social"
                   ? "bg-social-light text-social"
                   : "bg-sito-light text-sito";
 
@@ -64,15 +69,16 @@ const StrategyTable = ({ strategies, activeFilter }: StrategyTableProps) => {
                     className={`border-b cursor-pointer hover:bg-muted/30 transition-colors group ${
                       index % 2 === 1 ? "bg-muted/20" : ""
                     }`}
+                    onClick={() => onEdit(strategy)}
                   >
                     <td className="p-4 align-middle relative font-mono text-sm">
                       <div className={`absolute left-0 top-0 bottom-0 w-1 ${stripColor}`} />
                       <div className="flex items-center gap-1.5">
-                        <span>{strategy.codice}</span>
+                        <span>{strategy.codice_cliente}</span>
                         <button
                           className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-muted"
                           title="Copia cliente"
-                          onClick={() => copyToClipboard(strategy.nomeCliente)}
+                          onClick={(e) => { e.stopPropagation(); onCopy(strategy); }}
                         >
                           <Copy className="w-3.5 h-3.5 text-muted-foreground" />
                         </button>
@@ -80,22 +86,22 @@ const StrategyTable = ({ strategies, activeFilter }: StrategyTableProps) => {
                     </td>
                     <td className="p-4 align-middle">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-medium break-words">{strategy.nomeCliente}</span>
+                        <span className="font-medium break-words">{strategy.nome_cliente}</span>
                         <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${typeBadge}`}>
-                          {strategy.tipo}
+                          {strategy.tipo_strategia}
                         </span>
                       </div>
                     </td>
                     <td className="p-4 align-middle">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${badge.bg} ${badge.text}`}>
-                        {strategy.stato}
+                        {strategy.stato_strategia}
                       </span>
                     </td>
                     <td className="p-4 align-middle text-right font-mono font-semibold">
-                      €{strategy.importo}
+                      {formatImporto(strategy.importo_strategia)}
                     </td>
                     <td className="p-4 align-middle text-right text-muted-foreground text-sm">
-                      {strategy.aggiuntaIl}
+                      {formatDate(strategy.aggiunta_il)}
                     </td>
                   </tr>
                 );
@@ -108,9 +114,9 @@ const StrategyTable = ({ strategies, activeFilter }: StrategyTableProps) => {
       {/* Mobile Cards */}
       <div className="md:hidden flex flex-col gap-3 mt-4">
         {filtered.map((strategy, index) => {
-          const badge = statusBadgeMap[strategy.stato];
-          const stripColor = strategy.tipo === "Social" ? "bg-social" : "bg-sito";
-          const typeBadge = strategy.tipo === "Social"
+          const badge = statusBadgeMap[strategy.stato_strategia];
+          const stripColor = strategy.tipo_strategia === "Social" ? "bg-social" : "bg-sito";
+          const typeBadge = strategy.tipo_strategia === "Social"
             ? "bg-social-light text-social"
             : "bg-sito-light text-sito";
 
@@ -119,35 +125,36 @@ const StrategyTable = ({ strategies, activeFilter }: StrategyTableProps) => {
               key={strategy.id}
               className="bg-card rounded-xl shadow-sm border cursor-pointer active:scale-[0.98] transition-all animate-fade-in overflow-hidden"
               style={{ animationDelay: `${index * 0.04}s` }}
+              onClick={() => onEdit(strategy)}
             >
               <div className={`h-1 ${stripColor}`} />
               <div className="p-4">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-start gap-1.5">
                     <div>
-                      <p className="font-bold text-foreground break-words">{strategy.nomeCliente}</p>
-                      <p className="text-xs text-muted-foreground font-mono">{strategy.codice}</p>
+                      <p className="font-bold text-foreground break-words">{strategy.nome_cliente}</p>
+                      <p className="text-xs text-muted-foreground font-mono">{strategy.codice_cliente}</p>
                     </div>
                     <button
                       className="p-1 rounded hover:bg-muted shrink-0 mt-0.5"
                       title="Copia cliente"
-                      onClick={() => copyToClipboard(strategy.nomeCliente)}
+                      onClick={(e) => { e.stopPropagation(); onCopy(strategy); }}
                     >
                       <Copy className="w-3.5 h-3.5 text-muted-foreground" />
                     </button>
                   </div>
                   <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${typeBadge}`}>
-                    {strategy.tipo}
+                    {strategy.tipo_strategia}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${badge.bg} ${badge.text}`}>
-                      {strategy.stato}
+                      {strategy.stato_strategia}
                     </span>
-                    <span className="text-xs text-muted-foreground">{strategy.aggiuntaIl}</span>
+                    <span className="text-xs text-muted-foreground">{formatDate(strategy.aggiunta_il)}</span>
                   </div>
-                  <span className="text-lg font-bold font-mono text-foreground">€{strategy.importo}</span>
+                  <span className="text-lg font-bold font-mono text-foreground">{formatImporto(strategy.importo_strategia)}</span>
                 </div>
               </div>
             </div>

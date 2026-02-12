@@ -1,25 +1,40 @@
 import { CheckCircle2, Clock, Info, ChevronDown } from "lucide-react";
-import { strategies } from "@/data/strategies";
 import DonutChart from "./DonutChart";
 import { useMemo, useState } from "react";
+import { Strategy } from "@/data/strategies";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-const StatCards = () => {
+interface StatCardsProps {
+  strategies: Strategy[];
+}
+
+const formatImporto = (n: number) => `€${n.toLocaleString("it-IT")}`;
+
+const StatCards = ({ strategies }: StatCardsProps) => {
   const [showFatturate, setShowFatturate] = useState(false);
   const [showInLavorazione, setShowInLavorazione] = useState(false);
   const [showDettaglioTipo, setShowDettaglioTipo] = useState(false);
 
   const stats = useMemo(() => {
-    const fatturate = strategies.filter(
-      (s) => s.stato === "Presentata" || s.stato === "Va bene !"
-    );
+    const fatturate = strategies.filter((s) => s.stato_strategia === "Va bene !");
     const inLavorazione = strategies.filter(
-      (s) => s.stato !== "Presentata" && s.stato !== "Va bene !" && s.stato !== "In pausa"
+      (s) => s.stato_strategia !== "Va bene !" && s.stato_strategia !== "In pausa"
     );
-    const fatturatoConfermato = fatturate.reduce((sum, s) => sum + s.importo, 0);
-    const fatturatoPotenziale = inLavorazione.reduce((sum, s) => sum + s.importo, 0);
-    const totale = strategies.reduce((sum, s) => sum + s.importo, 0);
-    const socialCount = strategies.filter((s) => s.tipo === "Social").length;
-    const sitoCount = strategies.filter((s) => s.tipo === "Sito").length;
+    const fatturatoConfermato = fatturate.reduce((sum, s) => sum + s.importo_strategia, 0);
+    const fatturatoPotenziale = inLavorazione.reduce((sum, s) => sum + s.importo_strategia, 0);
+    const totale = fatturatoConfermato + fatturatoPotenziale;
+    const socialCount = strategies.filter((s) => s.tipo_strategia === "Social").length;
+    const sitoCount = strategies.filter((s) => s.tipo_strategia === "Sito").length;
+
+    // Count per stato for "in lavorazione"
+    const statoCounts: Record<string, number> = {};
+    inLavorazione.forEach((s) => {
+      statoCounts[s.stato_strategia] = (statoCounts[s.stato_strategia] || 0) + 1;
+    });
 
     return {
       fatturate,
@@ -29,19 +44,23 @@ const StatCards = () => {
       totale,
       socialCount,
       sitoCount,
+      statoCounts,
       percentuale: totale > 0 ? Math.round((fatturatoConfermato / totale) * 100) : 0,
     };
-  }, []);
+  }, [strategies]);
 
   const confChartData = [
     { name: "Guadagnato", value: stats.fatturatoConfermato, color: "hsl(161, 93%, 30%)" },
-    { name: "Potenziale", value: stats.totale - stats.fatturatoConfermato, color: "hsl(0, 0%, 63%)" },
+    { name: "Potenziale", value: stats.fatturatoPotenziale, color: "hsl(0, 0%, 63%)" },
   ];
 
   const socialSitoData = [
     { name: "Social", value: stats.socialCount, color: "hsl(161, 70%, 38%)" },
     { name: "Sito", value: stats.sitoCount, color: "hsl(199, 70%, 48%)" },
   ];
+
+  const fatturateSocial = stats.fatturate.filter((s) => s.tipo_strategia === "Social");
+  const fatturateSito = stats.fatturate.filter((s) => s.tipo_strategia === "Sito");
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -56,10 +75,10 @@ const StatCards = () => {
         <div className="p-6 pt-0 space-y-3">
           <div>
             <span className="block text-2xl sm:text-3xl font-bold font-mono text-foreground">
-              €{stats.fatturatoConfermato.toLocaleString("it-IT")}
+              {formatImporto(stats.fatturatoConfermato)}
             </span>
             <span className="text-xs text-muted-foreground">
-              su €{stats.totale.toLocaleString("it-IT")} totali
+              su {formatImporto(stats.totale)} totali
             </span>
           </div>
           <DonutChart data={confChartData} label={`Guadagnato ${stats.percentuale}%`} innerRadius={35} outerRadius={55} height={140} />
@@ -74,13 +93,29 @@ const StatCards = () => {
               <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${showFatturate ? "rotate-180" : ""}`} />
             </button>
             {showFatturate && (
-              <div className="mt-2 space-y-1">
-                {stats.fatturate.map((s) => (
-                  <div key={s.id} className="flex justify-between text-sm py-1 border-t border-border">
-                    <span className="text-muted-foreground">{s.nomeCliente}</span>
-                    <span className="font-medium font-mono">€{s.importo}</span>
+              <div className="mt-2 space-y-2">
+                {fatturateSocial.length > 0 && (
+                  <div>
+                    <p className="text-xs font-bold text-social uppercase mb-1">Social</p>
+                    {fatturateSocial.map((s) => (
+                      <div key={s.id} className="flex justify-between text-sm py-1 border-t border-border">
+                        <span className="text-muted-foreground">{s.nome_cliente}</span>
+                        <span className="font-medium font-mono">{formatImporto(s.importo_strategia)}</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
+                {fatturateSito.length > 0 && (
+                  <div>
+                    <p className="text-xs font-bold text-sito uppercase mb-1">Sito</p>
+                    {fatturateSito.map((s) => (
+                      <div key={s.id} className="flex justify-between text-sm py-1 border-t border-border">
+                        <span className="text-muted-foreground">{s.nome_cliente}</span>
+                        <span className="font-medium font-mono">{formatImporto(s.importo_strategia)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -93,13 +128,20 @@ const StatCards = () => {
           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
             <Clock className="w-4 h-4 text-accent-foreground" />
             Fatturato Potenziale
-            <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Revenue futura stimata (escluse strategie in pausa).</p>
+              </TooltipContent>
+            </Tooltip>
           </h3>
         </div>
         <div className="p-6 pt-0 space-y-3">
           <div className="text-center">
             <span className="text-3xl sm:text-4xl font-bold font-mono text-foreground">
-              €{stats.fatturatoPotenziale.toLocaleString("it-IT")}
+              {formatImporto(stats.fatturatoPotenziale)}
             </span>
           </div>
           <div>
@@ -114,10 +156,10 @@ const StatCards = () => {
             </button>
             {showInLavorazione && (
               <div className="mt-2 space-y-1">
-                {stats.inLavorazione.map((s) => (
-                  <div key={s.id} className="flex justify-between text-sm py-1 border-t border-border">
-                    <span className="text-muted-foreground">{s.nomeCliente}</span>
-                    <span className="font-medium font-mono">€{s.importo}</span>
+                {Object.entries(stats.statoCounts).map(([stato, count]) => (
+                  <div key={stato} className="flex justify-between text-sm py-1 border-t border-border">
+                    <span className="text-muted-foreground">{stato}</span>
+                    <span className="font-medium font-mono">{count}</span>
                   </div>
                 ))}
               </div>
@@ -138,13 +180,13 @@ const StatCards = () => {
                 <div className="flex justify-between text-sm py-1 border-t border-border">
                   <span className="text-muted-foreground">Social</span>
                   <span className="font-medium font-mono">
-                    €{stats.inLavorazione.filter(s => s.tipo === "Social").reduce((sum, s) => sum + s.importo, 0)}
+                    {formatImporto(stats.inLavorazione.filter(s => s.tipo_strategia === "Social").reduce((sum, s) => sum + s.importo_strategia, 0))}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm py-1 border-t border-border">
                   <span className="text-muted-foreground">Sito</span>
                   <span className="font-medium font-mono">
-                    €{stats.inLavorazione.filter(s => s.tipo === "Sito").reduce((sum, s) => sum + s.importo, 0)}
+                    {formatImporto(stats.inLavorazione.filter(s => s.tipo_strategia === "Sito").reduce((sum, s) => sum + s.importo_strategia, 0))}
                   </span>
                 </div>
               </div>
