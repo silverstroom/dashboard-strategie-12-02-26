@@ -1,23 +1,20 @@
 import { Strategy, StrategyStatus } from "@/data/strategies";
-import { Plus } from "lucide-react";
+import { Plus, Copy } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 interface StrategyTableProps {
   strategies: Strategy[];
   activeFilter: StrategyStatus | "Tutte";
 }
 
-const statusColorMap: Record<StrategyStatus, string> = {
-  "Da realizzare": "text-status-todo",
-  "Va bene !": "text-status-ok",
-  "In attesa/corretta": "text-status-waiting",
-  "Pronta per la presentazione": "text-status-ready",
-  "Presentata": "text-status-presented",
-  "In pausa": "text-status-paused",
-};
-
-const badgeClass: Record<string, string> = {
-  Social: "bg-badge-social/15 text-badge-social",
-  Sito: "bg-badge-sito/15 text-badge-sito",
+const statusBadgeMap: Record<StrategyStatus, { text: string; bg: string }> = {
+  "Da realizzare": { text: "text-status-da-realizzare", bg: "bg-status-da-realizzare-bg" },
+  "Va bene !": { text: "text-status-ok", bg: "bg-status-ok-bg" },
+  "In attesa/corretta": { text: "text-status-attesa", bg: "bg-status-attesa-bg" },
+  "Pronta per la presentazione": { text: "text-status-pronta", bg: "bg-status-pronta-bg" },
+  "Presentata": { text: "text-status-presentata", bg: "bg-status-presentata-bg" },
+  "In pausa": { text: "text-status-pausa", bg: "bg-status-pausa-bg" },
 };
 
 const StrategyTable = ({ strategies, activeFilter }: StrategyTableProps) => {
@@ -26,97 +23,136 @@ const StrategyTable = ({ strategies, activeFilter }: StrategyTableProps) => {
       ? strategies
       : strategies.filter((s) => s.stato === activeFilter);
 
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+  };
+
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">Strategie ({filtered.length})</h2>
-        <button className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-foreground">Strategie ({filtered.length})</h2>
+        <Button size="sm" className="gap-1.5">
           <Plus className="w-4 h-4" />
           Nuova Strategia
-        </button>
+        </Button>
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden md:block bg-card rounded-lg border border-border overflow-hidden shadow-sm">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-border">
-              <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Codice
-              </th>
-              <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Nome Cliente
-              </th>
-              <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Stato Strategia
-              </th>
-              <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Importo
-              </th>
-              <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Aggiunta il
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((strategy) => (
-              <tr
-                key={strategy.id}
-                className="border-b border-border last:border-b-0 hover:bg-muted/50 transition-colors cursor-pointer"
-              >
-                <td className="px-4 py-3.5 text-sm font-mono text-muted-foreground">
-                  {strategy.codice}
-                </td>
-                <td className="px-4 py-3.5">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">{strategy.nomeCliente}</span>
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${badgeClass[strategy.tipo]}`}>
-                      {strategy.tipo}
-                    </span>
-                  </div>
-                </td>
-                <td className={`px-4 py-3.5 text-sm font-medium ${statusColorMap[strategy.stato]}`}>
-                  {strategy.stato}
-                </td>
-                <td className="px-4 py-3.5 text-sm font-semibold text-right">
-                  €{strategy.importo}
-                </td>
-                <td className="px-4 py-3.5 text-sm text-muted-foreground text-right">
-                  {strategy.aggiuntaIl}
-                </td>
+      <div className="hidden md:block rounded-xl border bg-card overflow-hidden shadow-sm mt-4">
+        <div className="relative w-full overflow-auto">
+          <table className="w-full caption-bottom text-sm">
+            <thead>
+              <tr className="border-b bg-muted/50">
+                <th className="h-12 px-4 text-left align-middle text-muted-foreground w-[120px] font-semibold">Codice</th>
+                <th className="h-12 px-4 text-left align-middle text-muted-foreground font-semibold">Nome Cliente</th>
+                <th className="h-12 px-4 text-left align-middle text-muted-foreground font-semibold">Stato Strategia</th>
+                <th className="h-12 px-4 text-right align-middle text-muted-foreground font-semibold">Importo</th>
+                <th className="h-12 px-4 text-right align-middle text-muted-foreground font-semibold">Aggiunta il</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filtered.map((strategy, index) => {
+                const badge = statusBadgeMap[strategy.stato];
+                const stripColor = strategy.tipo === "Social" ? "bg-social" : "bg-sito";
+                const typeBadge = strategy.tipo === "Social"
+                  ? "bg-social-light text-social"
+                  : "bg-sito-light text-sito";
+
+                return (
+                  <tr
+                    key={strategy.id}
+                    className={`border-b cursor-pointer hover:bg-muted/30 transition-colors group ${
+                      index % 2 === 1 ? "bg-muted/20" : ""
+                    }`}
+                  >
+                    <td className="p-4 align-middle relative font-mono text-sm">
+                      <div className={`absolute left-0 top-0 bottom-0 w-1 ${stripColor}`} />
+                      <div className="flex items-center gap-1.5">
+                        <span>{strategy.codice}</span>
+                        <button
+                          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-muted"
+                          title="Copia cliente"
+                          onClick={() => copyToClipboard(strategy.nomeCliente)}
+                        >
+                          <Copy className="w-3.5 h-3.5 text-muted-foreground" />
+                        </button>
+                      </div>
+                    </td>
+                    <td className="p-4 align-middle">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-medium break-words">{strategy.nomeCliente}</span>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${typeBadge}`}>
+                          {strategy.tipo}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="p-4 align-middle">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${badge.bg} ${badge.text}`}>
+                        {strategy.stato}
+                      </span>
+                    </td>
+                    <td className="p-4 align-middle text-right font-mono font-semibold">
+                      €{strategy.importo}
+                    </td>
+                    <td className="p-4 align-middle text-right text-muted-foreground text-sm">
+                      {strategy.aggiuntaIl}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Mobile Cards */}
-      <div className="md:hidden space-y-3">
-        {filtered.map((strategy) => (
-          <div
-            key={strategy.id}
-            className="bg-card rounded-lg border border-border p-4 shadow-sm"
-          >
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="font-semibold">{strategy.nomeCliente}</p>
-                <p className="text-xs font-mono text-muted-foreground mt-0.5">{strategy.codice}</p>
+      <div className="md:hidden flex flex-col gap-3 mt-4">
+        {filtered.map((strategy, index) => {
+          const badge = statusBadgeMap[strategy.stato];
+          const stripColor = strategy.tipo === "Social" ? "bg-social" : "bg-sito";
+          const typeBadge = strategy.tipo === "Social"
+            ? "bg-social-light text-social"
+            : "bg-sito-light text-sito";
+
+          return (
+            <div
+              key={strategy.id}
+              className="bg-card rounded-xl shadow-sm border cursor-pointer active:scale-[0.98] transition-all animate-fade-in overflow-hidden"
+              style={{ animationDelay: `${index * 0.04}s` }}
+            >
+              <div className={`h-1 ${stripColor}`} />
+              <div className="p-4">
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-start gap-1.5">
+                    <div>
+                      <p className="font-bold text-foreground break-words">{strategy.nomeCliente}</p>
+                      <p className="text-xs text-muted-foreground font-mono">{strategy.codice}</p>
+                    </div>
+                    <button
+                      className="p-1 rounded hover:bg-muted shrink-0 mt-0.5"
+                      title="Copia cliente"
+                      onClick={() => copyToClipboard(strategy.nomeCliente)}
+                    >
+                      <Copy className="w-3.5 h-3.5 text-muted-foreground" />
+                    </button>
+                  </div>
+                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${typeBadge}`}>
+                    {strategy.tipo}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${badge.bg} ${badge.text}`}>
+                      {strategy.stato}
+                    </span>
+                    <span className="text-xs text-muted-foreground">{strategy.aggiuntaIl}</span>
+                  </div>
+                  <span className="text-lg font-bold font-mono text-foreground">€{strategy.importo}</span>
+                </div>
               </div>
-              <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${badgeClass[strategy.tipo]}`}>
-                {strategy.tipo}
-              </span>
             </div>
-            <div className="flex items-center justify-between mt-3">
-              <div>
-                <span className={`text-sm font-medium ${statusColorMap[strategy.stato]}`}>
-                  {strategy.stato}
-                </span>
-                <span className="text-xs text-muted-foreground ml-2">{strategy.aggiuntaIl}</span>
-              </div>
-              <span className="text-lg font-bold">€{strategy.importo}</span>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
