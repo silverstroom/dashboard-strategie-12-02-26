@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import DashboardHeader from "@/components/DashboardHeader";
 import StatCards from "@/components/StatCards";
 import StatusFilter from "@/components/StatusFilter";
@@ -7,11 +7,25 @@ import StrategyModal from "@/components/StrategyModal";
 import { initialStrategies, Strategy, StrategyStatus, getImporto } from "@/data/strategies";
 import { toast } from "sonner";
 
+const STORAGE_KEY = "strategies_data";
+
+const loadStrategies = (): Strategy[] => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  return initialStrategies;
+};
+
 const Index = () => {
-  const [strategies, setStrategies] = useState<Strategy[]>(initialStrategies);
+  const [strategies, setStrategies] = useState<Strategy[]>(loadStrategies);
   const [activeFilter, setActiveFilter] = useState<StrategyStatus | "Tutte">("Tutte");
   const [editingStrategy, setEditingStrategy] = useState<Strategy | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(strategies));
+  }, [strategies]);
 
   const handleCreate = () => {
     setEditingStrategy(null);
