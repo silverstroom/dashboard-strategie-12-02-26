@@ -19,7 +19,7 @@ const loadStrategies = (): Strategy[] => {
 
 const Index = () => {
   const [strategies, setStrategies] = useState<Strategy[]>(loadStrategies);
-  const [activeFilter, setActiveFilter] = useState<StrategyStatus | "Tutte">("Tutte");
+  const [activeFilter, setActiveFilter] = useState<StrategyStatus | "Tutte">("Da realizzare");
   const [editingStrategy, setEditingStrategy] = useState<Strategy | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
