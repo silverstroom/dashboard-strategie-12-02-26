@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 const Index = () => {
   const [strategies, setStrategies] = useState<Strategy[]>(initialStrategies);
-  const [activeFilter, setActiveFilter] = useState<StrategyStatus | "Tutte">("Da realizzare");
+  const [activeFilter, setActiveFilter] = useState<StrategyStatus | "Tutte">("Tutte");
   const [editingStrategy, setEditingStrategy] = useState<Strategy | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
