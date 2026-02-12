@@ -40,16 +40,16 @@
     --social-light: 161 70% 93%;
     --social-foreground: 0 0% 100%;
 
-    --sito: 199 70% 48%;
-    --sito-light: 199 70% 93%;
+    --sito: 270 60% 55%;
+    --sito-light: 270 60% 93%;
     --sito-foreground: 0 0% 100%;
 
     --status-pausa: 0 72% 50%;
     --status-pausa-bg: 0 72% 95%;
     --status-da-realizzare: 280 68% 50%;
     --status-da-realizzare-bg: 280 68% 95%;
-    --status-attesa: 217 91% 60%;
-    --status-attesa-bg: 217 91% 95%;
+    --status-attesa: 161 50% 40%;
+    --status-attesa-bg: 161 50% 92%;
     --status-pronta: 330 81% 50%;
     --status-pronta-bg: 330 81% 95%;
     --status-presentata: 199 89% 48%;
