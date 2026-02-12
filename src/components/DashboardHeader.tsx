@@ -2,16 +2,16 @@ import { Activity } from "lucide-react";
 
 const DashboardHeader = () => {
   return (
-    <header className="bg-header text-header-foreground px-6 py-5">
-      <div className="max-w-7xl mx-auto flex items-center gap-3">
-        <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-          <Activity className="w-5 h-5 text-primary" />
+    <header className="bg-primary text-primary-foreground px-4 py-4 md:px-6 md:py-5 shadow-lg">
+      <div className="container mx-auto flex items-center gap-3">
+        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary-foreground/10 backdrop-blur">
+          <Activity className="w-6 h-6" />
         </div>
         <div>
-          <h1 className="text-xl font-bold tracking-tight">
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight">
             Dashboard Strategie - Salvo Bilotti
           </h1>
-          <p className="text-sm text-primary opacity-80">Strategie Social e Sito</p>
+          <p className="text-xs md:text-sm opacity-75">Strategie Social e Sito</p>
         </div>
       </div>
     </header>

@@ -17,15 +17,15 @@ interface StatusFilterProps {
 
 const StatusFilter = ({ active, onChange }: StatusFilterProps) => {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
       {allStatuses.map((status) => (
         <button
           key={status}
           onClick={() => onChange(status)}
-          className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${
+          className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors shrink-0 ${
             active === status
-              ? "bg-primary text-primary-foreground border-primary shadow-sm"
-              : "bg-card text-muted-foreground border-border hover:border-primary/40 hover:text-foreground"
+              ? "bg-primary text-primary-foreground shadow-sm"
+              : "bg-card text-foreground/70 border border-border hover:bg-muted/40"
           }`}
         >
           {status}

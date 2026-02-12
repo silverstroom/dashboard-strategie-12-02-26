@@ -1,10 +1,11 @@
-import { CheckCircle2, Clock, ChevronDown } from "lucide-react";
+import { CheckCircle2, Clock, Info, ChevronDown } from "lucide-react";
 import { strategies } from "@/data/strategies";
 import DonutChart from "./DonutChart";
 import { useMemo, useState } from "react";
 
 const StatCards = () => {
   const [showFatturate, setShowFatturate] = useState(false);
+  const [showInLavorazione, setShowInLavorazione] = useState(false);
   const [showDettaglioTipo, setShowDettaglioTipo] = useState(false);
 
   const stats = useMemo(() => {
@@ -33,114 +34,151 @@ const StatCards = () => {
   }, []);
 
   const confChartData = [
-    { name: "Confermato", value: stats.fatturatoConfermato, color: "hsl(160, 60%, 40%)" },
-    { name: "Restante", value: stats.totale - stats.fatturatoConfermato, color: "hsl(210, 15%, 90%)" },
+    { name: "Guadagnato", value: stats.fatturatoConfermato, color: "hsl(161, 93%, 30%)" },
+    { name: "Potenziale", value: stats.totale - stats.fatturatoConfermato, color: "hsl(0, 0%, 63%)" },
   ];
 
   const socialSitoData = [
-    { name: "Social", value: stats.socialCount, color: "hsl(160, 60%, 40%)" },
-    { name: "Sito", value: stats.sitoCount, color: "hsl(190, 70%, 50%)" },
+    { name: "Social", value: stats.socialCount, color: "hsl(161, 70%, 38%)" },
+    { name: "Sito", value: stats.sitoCount, color: "hsl(199, 70%, 48%)" },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {/* Fatturato Confermato */}
-      <div className="bg-card rounded-lg border border-border p-5 shadow-sm">
-        <div className="flex items-center gap-2 mb-1">
-          <CheckCircle2 className="w-4 h-4 text-primary" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <div className="rounded-lg border bg-card text-card-foreground shadow-sm animate-fade-in">
+        <div className="flex flex-col space-y-1.5 p-6 pb-2">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+            <CheckCircle2 className="w-4 h-4 text-primary" />
             Fatturato Confermato
-          </span>
+          </h3>
         </div>
-        <p className="text-3xl font-bold font-display tracking-tight">
-          €{stats.fatturatoConfermato.toLocaleString("it-IT")}
-        </p>
-        <p className="text-sm text-muted-foreground">
-          su €{stats.totale.toLocaleString("it-IT")} totali
-        </p>
-        <DonutChart data={confChartData} />
-        <p className="text-center text-sm font-medium text-primary">
-          Guadagnato {stats.percentuale}%
-        </p>
-        <button
-          onClick={() => setShowFatturate(!showFatturate)}
-          className="mt-3 w-full flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <span>Dettaglio Fatturate ({stats.fatturate.length})</span>
-          <ChevronDown className={`w-4 h-4 transition-transform ${showFatturate ? "rotate-180" : ""}`} />
-        </button>
-        {showFatturate && (
-          <div className="mt-2 space-y-1">
-            {stats.fatturate.map((s) => (
-              <div key={s.id} className="flex justify-between text-sm py-1 border-t border-border">
-                <span className="text-muted-foreground">{s.nomeCliente}</span>
-                <span className="font-medium">€{s.importo}</span>
-              </div>
-            ))}
+        <div className="p-6 pt-0 space-y-3">
+          <div>
+            <span className="block text-2xl sm:text-3xl font-bold font-mono text-foreground">
+              €{stats.fatturatoConfermato.toLocaleString("it-IT")}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              su €{stats.totale.toLocaleString("it-IT")} totali
+            </span>
           </div>
-        )}
+          <DonutChart data={confChartData} label={`Guadagnato ${stats.percentuale}%`} innerRadius={35} outerRadius={55} height={140} />
+          <div>
+            <button
+              onClick={() => setShowFatturate(!showFatturate)}
+              className="flex items-center justify-between w-full border-t border-border pt-2 group cursor-pointer"
+            >
+              <p className="text-xs font-semibold text-muted-foreground uppercase">
+                Dettaglio Fatturate ({stats.fatturate.length})
+              </p>
+              <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${showFatturate ? "rotate-180" : ""}`} />
+            </button>
+            {showFatturate && (
+              <div className="mt-2 space-y-1">
+                {stats.fatturate.map((s) => (
+                  <div key={s.id} className="flex justify-between text-sm py-1 border-t border-border">
+                    <span className="text-muted-foreground">{s.nomeCliente}</span>
+                    <span className="font-medium font-mono">€{s.importo}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Fatturato Potenziale */}
-      <div className="bg-card rounded-lg border border-border p-5 shadow-sm">
-        <div className="flex items-center gap-2 mb-1">
-          <Clock className="w-4 h-4 text-accent" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <div className="rounded-lg border bg-card text-card-foreground shadow-sm animate-fade-in" style={{ animationDelay: "0.1s" }}>
+        <div className="flex flex-col space-y-1.5 p-6 pb-2">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+            <Clock className="w-4 h-4 text-accent-foreground" />
             Fatturato Potenziale
-          </span>
+            <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+          </h3>
         </div>
-        <p className="text-3xl font-bold font-display tracking-tight text-center mt-4">
-          €{stats.fatturatoPotenziale.toLocaleString("it-IT")}
-        </p>
-        <div className="mt-6 bg-muted rounded-md p-3">
-          <p className="text-sm font-semibold uppercase tracking-wide">
-            {stats.inLavorazione.length} strategie in lavorazione
-          </p>
-        </div>
-        <button
-          onClick={() => setShowDettaglioTipo(!showDettaglioTipo)}
-          className="mt-4 w-full flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <span>Dettaglio per Tipo</span>
-          <ChevronDown className={`w-4 h-4 transition-transform ${showDettaglioTipo ? "rotate-180" : ""}`} />
-        </button>
-        {showDettaglioTipo && (
-          <div className="mt-2 space-y-1">
-            <div className="flex justify-between text-sm py-1 border-t border-border">
-              <span className="text-muted-foreground">Social</span>
-              <span className="font-medium">
-                €{stats.inLavorazione.filter(s => s.tipo === "Social").reduce((sum, s) => sum + s.importo, 0)}
-              </span>
-            </div>
-            <div className="flex justify-between text-sm py-1 border-t border-border">
-              <span className="text-muted-foreground">Sito</span>
-              <span className="font-medium">
-                €{stats.inLavorazione.filter(s => s.tipo === "Sito").reduce((sum, s) => sum + s.importo, 0)}
-              </span>
-            </div>
+        <div className="p-6 pt-0 space-y-3">
+          <div className="text-center">
+            <span className="text-3xl sm:text-4xl font-bold font-mono text-foreground">
+              €{stats.fatturatoPotenziale.toLocaleString("it-IT")}
+            </span>
           </div>
-        )}
+          <div>
+            <button
+              onClick={() => setShowInLavorazione(!showInLavorazione)}
+              className="flex items-center justify-between w-full bg-muted/50 rounded-lg p-3 group cursor-pointer"
+            >
+              <p className="text-xs font-semibold text-muted-foreground uppercase">
+                {stats.inLavorazione.length} strategie in lavorazione
+              </p>
+              <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${showInLavorazione ? "rotate-180" : ""}`} />
+            </button>
+            {showInLavorazione && (
+              <div className="mt-2 space-y-1">
+                {stats.inLavorazione.map((s) => (
+                  <div key={s.id} className="flex justify-between text-sm py-1 border-t border-border">
+                    <span className="text-muted-foreground">{s.nomeCliente}</span>
+                    <span className="font-medium font-mono">€{s.importo}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div>
+            <button
+              onClick={() => setShowDettaglioTipo(!showDettaglioTipo)}
+              className="flex items-center justify-between w-full border-t border-border pt-2 group cursor-pointer"
+            >
+              <p className="text-xs font-semibold text-muted-foreground uppercase">
+                Dettaglio per Tipo
+              </p>
+              <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${showDettaglioTipo ? "rotate-180" : ""}`} />
+            </button>
+            {showDettaglioTipo && (
+              <div className="mt-2 space-y-1">
+                <div className="flex justify-between text-sm py-1 border-t border-border">
+                  <span className="text-muted-foreground">Social</span>
+                  <span className="font-medium font-mono">
+                    €{stats.inLavorazione.filter(s => s.tipo === "Social").reduce((sum, s) => sum + s.importo, 0)}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm py-1 border-t border-border">
+                  <span className="text-muted-foreground">Sito</span>
+                  <span className="font-medium font-mono">
+                    €{stats.inLavorazione.filter(s => s.tipo === "Sito").reduce((sum, s) => sum + s.importo, 0)}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Social vs Sito */}
-      <div className="bg-card rounded-lg border border-border p-5 shadow-sm">
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Social vs Sito
-        </span>
-        <div className="flex items-center gap-4 mt-2 mb-1">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-primary" />
-            <span className="text-sm font-medium">{stats.socialCount} Social</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-accent" />
-            <span className="text-sm font-medium">{stats.sitoCount} Sito</span>
-          </div>
+      <div className="rounded-lg border bg-card text-card-foreground shadow-sm animate-fade-in" style={{ animationDelay: "0.2s" }}>
+        <div className="flex flex-col space-y-1.5 p-6 pb-2">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+            Social vs Sito
+          </h3>
         </div>
-        <DonutChart data={socialSitoData} />
-        <p className="text-center text-sm font-medium text-muted-foreground">
-          Social {Math.round((stats.socialCount / strategies.length) * 100)}%
-        </p>
+        <div className="p-6 pt-0">
+          <div className="flex items-center gap-4 mb-2">
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-full bg-social" />
+              <span className="text-sm font-medium">{stats.socialCount} Social</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-full bg-sito" />
+              <span className="text-sm font-medium">{stats.sitoCount} Sito</span>
+            </div>
+          </div>
+          <DonutChart
+            data={socialSitoData}
+            label={`Social ${Math.round((stats.socialCount / strategies.length) * 100)}%`}
+            innerRadius={40}
+            outerRadius={65}
+            height={160}
+          />
+        </div>
       </div>
     </div>
   );

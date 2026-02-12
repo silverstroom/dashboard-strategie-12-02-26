@@ -26,7 +26,7 @@ export const strategies: Strategy[] = [
     tipo: "Social",
     stato: "Da realizzare",
     importo: 300,
-    aggiuntaIl: "10/02/2026",
+    aggiuntaIl: "11/02/2026",
   },
   {
     id: "2",
@@ -35,7 +35,7 @@ export const strategies: Strategy[] = [
     tipo: "Social",
     stato: "Da realizzare",
     importo: 300,
-    aggiuntaIl: "10/02/2026",
+    aggiuntaIl: "11/02/2026",
   },
   {
     id: "3",
@@ -44,7 +44,7 @@ export const strategies: Strategy[] = [
     tipo: "Social",
     stato: "Da realizzare",
     importo: 300,
-    aggiuntaIl: "10/02/2026",
+    aggiuntaIl: "11/02/2026",
   },
   {
     id: "4",
@@ -53,7 +53,7 @@ export const strategies: Strategy[] = [
     tipo: "Sito",
     stato: "Da realizzare",
     importo: 150,
-    aggiuntaIl: "10/02/2026",
+    aggiuntaIl: "11/02/2026",
   },
   {
     id: "5",
@@ -62,7 +62,7 @@ export const strategies: Strategy[] = [
     tipo: "Sito",
     stato: "Da realizzare",
     importo: 150,
-    aggiuntaIl: "10/02/2026",
+    aggiuntaIl: "11/02/2026",
   },
   {
     id: "6",
