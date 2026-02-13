@@ -29,6 +29,16 @@ const Index = () => {
     };
     checkAuth();
 
+    // If "Ricordami" was not checked, sign out on tab close
+    const handleBeforeUnload = () => {
+      if (sessionStorage.getItem("temp_session") === "true") {
+        supabase.auth.signOut();
+        sessionStorage.removeItem("temp_session");
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_OUT") navigate("/login");
     });
