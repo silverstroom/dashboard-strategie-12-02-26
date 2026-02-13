@@ -17,6 +17,7 @@ export interface Strategy {
   importo_strategia: number;
   aggiunta_il: string;
   data_conferma: string | null;
+  agente: string;
 }
 
 export function getImporto(tipo: StrategyType, stato: StrategyStatus): number {

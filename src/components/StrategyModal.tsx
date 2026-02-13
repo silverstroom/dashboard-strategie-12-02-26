@@ -58,6 +58,7 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
   const [aggiuntaIl, setAggiuntaIl] = useState(new Date().toISOString().split("T")[0]);
   const [dataConferma, setDataConferma] = useState<string | null>(null);
   const [prevStato, setPrevStato] = useState<StrategyStatus>("Da realizzare");
+  const [agente, setAgente] = useState("");
 
   useEffect(() => {
     if (strategy) {
@@ -68,6 +69,7 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
       setAggiuntaIl(strategy.aggiunta_il);
       setDataConferma(strategy.data_conferma);
       setPrevStato(strategy.stato_strategia);
+      setAgente(strategy.agente || "");
     } else {
       setCodice("");
       setTipo("Social");
@@ -76,6 +78,7 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
       setAggiuntaIl(new Date().toISOString().split("T")[0]);
       setDataConferma(null);
       setPrevStato("Da realizzare");
+      setAgente("");
     }
   }, [strategy, open]);
 
@@ -106,6 +109,7 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
       importo_strategia: importo,
       aggiunta_il: aggiuntaIl,
       data_conferma: dataConferma,
+      agente,
     });
   };
 
@@ -149,6 +153,10 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
           <div className="grid gap-2">
             <Label>Importo (auto)</Label>
             <Input value={`€${importo}`} readOnly className="font-mono bg-muted/30" />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="agente">Agente</Label>
+            <Input id="agente" value={agente} onChange={(e) => setAgente(e.target.value)} placeholder="Nome agente" />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="data">Aggiunta il</Label>

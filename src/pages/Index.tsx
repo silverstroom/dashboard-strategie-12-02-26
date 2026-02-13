@@ -76,6 +76,7 @@ const Index = () => {
           importo_strategia: s.importo_strategia,
           aggiunta_il: s.aggiunta_il,
           data_conferma: s.data_conferma,
+          agente: (s as any).agente || "",
         }))
       );
     }
@@ -101,6 +102,7 @@ const Index = () => {
       importo_strategia: strategy.importo_strategia,
       aggiunta_il: strategy.aggiunta_il,
       data_conferma: strategy.data_conferma,
+      agente: strategy.agente,
     };
 
     // Check if it's an existing strategy (UUID format)
