@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       strategies: {
         Row: {
+          agente: string
           aggiunta_il: string
           codice_cliente: string
           created_at: string
@@ -28,6 +29,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          agente?: string
           aggiunta_il?: string
           codice_cliente: string
           created_at?: string
@@ -40,6 +42,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          agente?: string
           aggiunta_il?: string
           codice_cliente?: string
           created_at?: string

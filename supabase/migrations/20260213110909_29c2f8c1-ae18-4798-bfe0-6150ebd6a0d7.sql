@@ -1,0 +1,1 @@
+ALTER TABLE public.strategies ADD COLUMN agente text NOT NULL DEFAULT '';
