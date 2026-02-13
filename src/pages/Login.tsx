@@ -5,13 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Lock } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import loginIcon from "@/assets/login-icon.jpg";
 
 const ADMIN_EMAIL = "admin@dashboard.local";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -22,6 +24,9 @@ const Login = () => {
       return;
     }
     setLoading(true);
+    if (!rememberMe) {
+      await supabase.auth.setSession({ access_token: '', refresh_token: '' }).catch(() => {});
+    }
     const { error } = await supabase.auth.signInWithPassword({
       email: ADMIN_EMAIL,
       password,
@@ -30,6 +35,11 @@ const Login = () => {
     if (error) {
       toast.error("Credenziali non valide");
     } else {
+      if (!rememberMe) {
+        sessionStorage.setItem("temp_session", "true");
+      } else {
+        sessionStorage.removeItem("temp_session");
+      }
       navigate("/");
     }
   };
@@ -39,8 +49,8 @@ const Login = () => {
       <div className="w-full max-w-sm">
         <div className="bg-card rounded-2xl border shadow-lg p-8">
           <div className="flex flex-col items-center mb-6">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-              <Lock className="w-6 h-6 text-primary" />
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3 overflow-hidden">
+              <img src={loginIcon} alt="Logo" className="w-8 h-8 object-contain" />
             </div>
             <h1 className="text-xl font-bold text-foreground">Dashboard Strategie</h1>
             <p className="text-sm text-muted-foreground mt-1">Accedi per continuare</p>
@@ -66,6 +76,16 @@ const Login = () => {
                 placeholder="••••••••"
                 autoComplete="current-password"
               />
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="rememberMe"
+                checked={rememberMe}
+                onCheckedChange={(checked) => setRememberMe(checked === true)}
+              />
+              <Label htmlFor="rememberMe" className="text-sm font-normal cursor-pointer">
+                Ricordami
+              </Label>
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Accesso..." : "Accedi"}
