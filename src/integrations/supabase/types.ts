@@ -14,7 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      strategies: {
+        Row: {
+          aggiunta_il: string
+          codice_cliente: string
+          created_at: string
+          data_conferma: string | null
+          id: string
+          importo_strategia: number
+          nome_cliente: string
+          stato_strategia: string
+          tipo_strategia: string
+          updated_at: string
+        }
+        Insert: {
+          aggiunta_il?: string
+          codice_cliente: string
+          created_at?: string
+          data_conferma?: string | null
+          id?: string
+          importo_strategia?: number
+          nome_cliente: string
+          stato_strategia: string
+          tipo_strategia: string
+          updated_at?: string
+        }
+        Update: {
+          aggiunta_il?: string
+          codice_cliente?: string
+          created_at?: string
+          data_conferma?: string | null
+          id?: string
+          importo_strategia?: number
+          nome_cliente?: string
+          stato_strategia?: string
+          tipo_strategia?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
