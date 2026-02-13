@@ -1,8 +1,9 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardHeader from "@/components/DashboardHeader";
 import StatCards from "@/components/StatCards";
 import StatusFilter from "@/components/StatusFilter";
+import AgentFilter from "@/components/AgentFilter";
 import StrategyTable from "@/components/StrategyTable";
 import StrategyModal from "@/components/StrategyModal";
 import { Strategy, StrategyStatus, getImporto } from "@/data/strategies";
@@ -12,6 +13,7 @@ import { toast } from "sonner";
 const Index = () => {
   const [strategies, setStrategies] = useState<Strategy[]>([]);
   const [activeFilter, setActiveFilter] = useState<StrategyStatus | "Tutte">("Da realizzare");
+  const [activeAgent, setActiveAgent] = useState<string>("Tutti");
   const [editingStrategy, setEditingStrategy] = useState<Strategy | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -136,6 +138,12 @@ const Index = () => {
     toast("Copiato negli appunti");
   };
 
+  const agentFiltered = useMemo(() => {
+    if (activeAgent === "Tutti") return strategies;
+    if (activeAgent === "Senza agente") return strategies.filter((s) => !s.agente);
+    return strategies.filter((s) => s.agente === activeAgent);
+  }, [strategies, activeAgent]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -148,10 +156,11 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <DashboardHeader />
       <main className="container mx-auto px-4 py-6 space-y-6 max-w-6xl">
-        <StatCards strategies={strategies} />
-        <StatusFilter strategies={strategies} active={activeFilter} onChange={setActiveFilter} />
+        <AgentFilter strategies={strategies} activeAgent={activeAgent} onChange={setActiveAgent} />
+        <StatCards strategies={agentFiltered} />
+        <StatusFilter strategies={agentFiltered} active={activeFilter} onChange={setActiveFilter} />
         <StrategyTable
-          strategies={strategies}
+          strategies={agentFiltered}
           activeFilter={activeFilter}
           onEdit={handleEdit}
           onCreate={handleCreate}
