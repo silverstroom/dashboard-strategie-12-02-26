@@ -2,17 +2,35 @@ import { useState, useCallback, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardHeader from "@/components/DashboardHeader";
 import StatCards from "@/components/StatCards";
-import StatusFilter from "@/components/StatusFilter";
 import AgentFilter from "@/components/AgentFilter";
 import StrategyTable from "@/components/StrategyTable";
 import StrategyModal from "@/components/StrategyModal";
+import BottomNav, { AppTab } from "@/components/BottomNav";
+import HomeOverview from "@/components/HomeOverview";
 import { Strategy, StrategyStatus, getImporto } from "@/data/strategies";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+// Which statuses belong to each tab
+const TAB_STATUSES: Record<AppTab, StrategyStatus[]> = {
+  "home": [],
+  "da-realizzare": ["Da realizzare", "In attesa/corretta"],
+  "ready-to": ["Pronta per la presentazione"],
+  "presentata": ["Presentata", "Va bene !"],
+};
+
+const TAB_LABELS: Record<AppTab, string> = {
+  "home": "Panoramica",
+  "da-realizzare": "Da Realizzare",
+  "ready-to": "Ready to Present",
+  "presentata": "Presentata",
+};
 
 const Index = () => {
   const [strategies, setStrategies] = useState<Strategy[]>([]);
-  const [activeFilter, setActiveFilter] = useState<StrategyStatus | "Tutte">("Da realizzare");
+  const [activeTab, setActiveTab] = useState<AppTab>("home");
   const [activeAgent, setActiveAgent] = useState<string>("Tutti");
   const [editingStrategy, setEditingStrategy] = useState<Strategy | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,7 +49,6 @@ const Index = () => {
     };
     checkAuth();
 
-    // If "Ricordami" was not checked, sign out on tab close
     const handleBeforeUnload = () => {
       if (sessionStorage.getItem("temp_session") === "true") {
         supabase.auth.signOut();
@@ -40,11 +57,13 @@ const Index = () => {
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [navigate]);
 
+  // Auth state change listener
+  useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_OUT") navigate("/login");
     });
-
     return () => subscription.unsubscribe();
   }, [navigate]);
 
@@ -107,9 +126,8 @@ const Index = () => {
       agente: strategy.agente,
     };
 
-    // Check if it's an existing strategy (UUID format)
     const isExisting = strategies.some((s) => s.id === strategy.id);
-    
+
     if (isExisting) {
       const { error } = await supabase
         .from("strategies")
@@ -138,11 +156,19 @@ const Index = () => {
     toast("Copiato negli appunti");
   };
 
+  // Filter by agent
   const agentFiltered = useMemo(() => {
     if (activeAgent === "Tutti") return strategies;
     if (activeAgent === "Senza agente") return strategies.filter((s) => !s.agente);
     return strategies.filter((s) => s.agente === activeAgent);
   }, [strategies, activeAgent]);
+
+  // Filter by tab statuses
+  const tabFiltered = useMemo(() => {
+    if (activeTab === "home") return agentFiltered;
+    const statuses = TAB_STATUSES[activeTab];
+    return agentFiltered.filter((s) => statuses.includes(s.stato_strategia));
+  }, [agentFiltered, activeTab]);
 
   if (loading) {
     return (
@@ -155,18 +181,48 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <DashboardHeader />
-      <main className="container mx-auto px-4 py-6 space-y-6 max-w-6xl">
+
+      <main className="container mx-auto px-4 py-5 space-y-5 max-w-6xl pb-24">
+        {/* Agent filter always visible */}
         <AgentFilter strategies={strategies} activeAgent={activeAgent} onChange={setActiveAgent} />
-        <StatCards strategies={agentFiltered} />
-        <StatusFilter strategies={agentFiltered} active={activeFilter} onChange={setActiveFilter} />
-        <StrategyTable
-          strategies={agentFiltered}
-          activeFilter={activeFilter}
-          onEdit={handleEdit}
-          onCreate={handleCreate}
-          onCopy={handleCopy}
-        />
+
+        {activeTab === "home" ? (
+          /* ---- HOME: panoramica con grafici ---- */
+          <HomeOverview strategies={agentFiltered} onNewStrategy={handleCreate} />
+        ) : (
+          /* ---- ALTRE TAB: tabella filtrata ---- */
+          <>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-foreground">{TAB_LABELS[activeTab]}</h2>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  {tabFiltered.length} strateg{tabFiltered.length === 1 ? "ia" : "ie"}
+                  {TAB_STATUSES[activeTab].length > 1 && (
+                    <span className="ml-1">
+                      ({TAB_STATUSES[activeTab].join(", ")})
+                    </span>
+                  )}
+                </p>
+              </div>
+              <Button size="sm" className="gap-1.5" onClick={handleCreate}>
+                <Plus className="w-4 h-4" />
+                Nuova
+              </Button>
+            </div>
+            <StrategyTable
+              strategies={tabFiltered}
+              activeFilter="Tutte"
+              onEdit={handleEdit}
+              onCreate={handleCreate}
+              onCopy={handleCopy}
+              hideHeader
+            />
+          </>
+        )}
       </main>
+
+      <BottomNav active={activeTab} onChange={setActiveTab} />
+
       <StrategyModal
         open={isModalOpen}
         onOpenChange={setIsModalOpen}

@@ -12,27 +12,27 @@ const DashboardHeader = () => {
   };
 
   return (
-    <header className="bg-primary text-primary-foreground px-4 py-4 md:px-6 md:py-5 shadow-lg">
-      <div className="container mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary-foreground/10 backdrop-blur">
-            <Activity className="w-6 h-6" />
+    <header className="bg-primary text-primary-foreground px-4 py-3 md:px-6 shadow-md sticky top-0 z-40">
+      <div className="container mx-auto flex items-center justify-between max-w-6xl">
+        <div className="flex items-center gap-2.5">
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary-foreground/10">
+            <Activity className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight">
-              Dashboard Strategie - Salvo Bilotti
+            <h1 className="text-base md:text-lg font-bold tracking-tight leading-tight">
+              Dashboard Strategie
             </h1>
-            <p className="text-xs md:text-sm opacity-75">Strategie Social e Sito</p>
+            <p className="text-[10px] opacity-70 leading-tight">Salvo Bilotti</p>
           </div>
         </div>
         <Button
           variant="ghost"
           size="sm"
           onClick={handleLogout}
-          className="text-primary-foreground hover:bg-primary-foreground/10"
+          className="text-primary-foreground hover:bg-primary-foreground/10 h-8 px-2"
         >
-          <LogOut className="w-4 h-4 mr-1.5" />
-          Esci
+          <LogOut className="w-4 h-4" />
+          <span className="hidden sm:inline ml-1.5">Esci</span>
         </Button>
       </div>
     </header>
