@@ -57,6 +57,11 @@
     --status-ok: 142 71% 45%;
     --status-ok-bg: 142 71% 95%;
 
+    --urgent: 25 95% 50%;
+    --urgent-bg: 25 95% 95%;
+    --urgent-border: 25 95% 78%;
+    --urgent-foreground: 25 95% 30%;
+
     --chart-earned: 161 93% 30%;
     --chart-potential: 0 0% 63%;
     --chart-social: 161 70% 38%;
@@ -100,6 +105,11 @@
     --sidebar-accent-foreground: 178 84% 10%;
     --sidebar-border: 0 0% 32%;
     --sidebar-ring: 158 64% 51%;
+
+    --urgent: 25 95% 55%;
+    --urgent-bg: 25 60% 15%;
+    --urgent-border: 25 70% 35%;
+    --urgent-foreground: 25 95% 80%;
   }
 }
 

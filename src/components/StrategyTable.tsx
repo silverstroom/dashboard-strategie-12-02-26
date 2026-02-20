@@ -1,5 +1,5 @@
 import { Strategy, StrategyStatus } from "@/data/strategies";
-import { Plus, Copy } from "lucide-react";
+import { Plus, Copy, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface StrategyTableProps {
@@ -14,7 +14,7 @@ interface StrategyTableProps {
 const statusBadgeMap: Record<StrategyStatus, { text: string; bg: string }> = {
   "Da realizzare": { text: "text-status-da-realizzare", bg: "bg-status-da-realizzare-bg" },
   "Va bene !": { text: "text-status-ok", bg: "bg-status-ok-bg" },
-  "In attesa/corretta": { text: "text-status-attesa", bg: "bg-status-attesa-bg" },
+  "In attesa/corretta": { text: "text-urgent-foreground", bg: "bg-urgent-bg" },
   "Pronta per la presentazione": { text: "text-status-pronta", bg: "bg-status-pronta-bg" },
   "Presentata": { text: "text-status-presentata", bg: "bg-status-presentata-bg" },
   "In pausa": { text: "text-status-pausa", bg: "bg-status-pausa-bg" },
@@ -49,7 +49,14 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
       ? strategies
       : strategies.filter((s) => s.stato_strategia === activeFilter);
 
-  const groups = groupByAgente(filtered);
+  // Sort: urgent ("In attesa/corretta") always first
+  const sorted = [...filtered].sort((a, b) => {
+    if (a.stato_strategia === "In attesa/corretta" && b.stato_strategia !== "In attesa/corretta") return -1;
+    if (b.stato_strategia === "In attesa/corretta" && a.stato_strategia !== "In attesa/corretta") return 1;
+    return 0;
+  });
+
+  const groups = groupByAgente(sorted);
 
   return (
     <div>
@@ -77,7 +84,7 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                     <tr className="border-b bg-muted/50">
                       <th className="h-12 px-4 text-left align-middle text-muted-foreground w-[120px] font-semibold">Codice</th>
                       <th className="h-12 px-4 text-left align-middle text-muted-foreground font-semibold">Nome Cliente</th>
-                      <th className="h-12 px-4 text-left align-middle text-muted-foreground font-semibold">Stato Strategia</th>
+                      <th className="h-12 px-4 text-left align-middle text-muted-foreground font-semibold">Stato</th>
                       <th className="h-12 px-4 text-right align-middle text-muted-foreground font-semibold">Importo</th>
                       <th className="h-12 px-4 text-right align-middle text-muted-foreground font-semibold">Aggiunta il</th>
                     </tr>
@@ -89,18 +96,19 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                       const typeBadge = strategy.tipo_strategia === "Social"
                         ? "bg-social-light text-social"
                         : "bg-sito-light text-sito";
+                      const isUrgent = strategy.stato_strategia === "In attesa/corretta";
 
                       return (
                         <tr
                           key={strategy.id}
                           className={`border-b cursor-pointer hover:bg-muted/30 transition-colors group ${
-                            index % 2 === 1 ? "bg-muted/20" : ""
+                            isUrgent ? "bg-urgent-bg" : index % 2 === 1 ? "bg-muted/20" : ""
                           }`}
                           onClick={() => onEdit(strategy)}
                         >
                           <td className="p-4 align-middle relative font-mono text-sm">
-                            <div className={`absolute left-0 top-0 bottom-0 w-1 ${stripColor}`} />
-                            <div className="flex items-center gap-1.5">
+                            <div className={`absolute left-0 top-0 bottom-0 w-1 ${isUrgent ? "bg-urgent" : stripColor}`} />
+                            <div className="flex items-center gap-1.5 pl-1">
                               <span>{strategy.codice_cliente}</span>
                               <button
                                 className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-muted"
@@ -113,6 +121,12 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                           </td>
                           <td className="p-4 align-middle">
                             <div className="flex items-center gap-2 flex-wrap">
+                              {isUrgent && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-urgent-bg border border-urgent-border text-urgent-foreground text-[10px] font-bold uppercase tracking-wide">
+                                  <AlertTriangle className="w-3 h-3" />
+                                  Correzione urgente
+                                </span>
+                              )}
                               <span className="font-medium break-words">{strategy.nome_cliente}</span>
                               <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${typeBadge}`}>
                                 {strategy.tipo_strategia}
@@ -155,16 +169,27 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                 const typeBadge = strategy.tipo_strategia === "Social"
                   ? "bg-social-light text-social"
                   : "bg-sito-light text-sito";
+                const isUrgent = strategy.stato_strategia === "In attesa/corretta";
 
                 return (
                   <div
                     key={strategy.id}
-                    className="bg-card rounded-xl shadow-sm border cursor-pointer active:scale-[0.98] transition-all animate-fade-in overflow-hidden"
+                    className={`rounded-xl shadow-sm border cursor-pointer active:scale-[0.98] transition-all animate-fade-in overflow-hidden ${
+                      isUrgent ? "bg-urgent-bg border-urgent-border" : "bg-card"
+                    }`}
                     style={{ animationDelay: `${index * 0.04}s` }}
                     onClick={() => onEdit(strategy)}
                   >
-                    <div className={`h-1 ${stripColor}`} />
+                    <div className={`h-1 ${isUrgent ? "bg-urgent" : stripColor}`} />
                     <div className="p-4">
+                      {isUrgent && (
+                        <div className="flex items-center gap-1.5 mb-2.5 px-2.5 py-1.5 rounded-lg bg-urgent-bg border border-urgent-border w-fit">
+                          <AlertTriangle className="w-3.5 h-3.5 text-urgent-foreground" />
+                          <span className="text-[11px] font-bold text-urgent-foreground uppercase tracking-wide">
+                            Correzione urgente
+                          </span>
+                        </div>
+                      )}
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-start gap-1.5">
                           <div>

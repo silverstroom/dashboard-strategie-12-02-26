@@ -1,5 +1,5 @@
 import { Strategy, StrategyStatus } from "@/data/strategies";
-import { CheckCircle2, Clock, Wrench, Presentation, TrendingUp, Plus, AlertCircle } from "lucide-react";
+import { CheckCircle2, Clock, Wrench, Presentation, TrendingUp, Plus, AlertCircle, AlertTriangle } from "lucide-react";
 import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -112,13 +112,14 @@ const HomeOverview = ({ strategies, onNewStrategy, onTabChange }: HomeOverviewPr
             {stats.daFare.length}
           </span>
         </div>
-        <div className="flex items-center gap-3 text-xs text-status-da-realizzare/80">
+        <div className="flex items-center gap-3 text-xs text-status-da-realizzare/80 flex-wrap">
           <span className="font-semibold">
             {stats.daFare.filter((s) => s.stato_strategia === "Da realizzare").length} da iniziare
           </span>
           <span className="opacity-40">·</span>
-          <span className="font-semibold">
-            {stats.daFare.filter((s) => s.stato_strategia === "In attesa/corretta").length} in revisione
+          <span className="inline-flex items-center gap-1 font-bold text-urgent-foreground">
+            <AlertTriangle className="w-3 h-3" />
+            {stats.daFare.filter((s) => s.stato_strategia === "In attesa/corretta").length} correzione urgente
           </span>
           <span className="opacity-40">·</span>
           <span className="font-semibold">

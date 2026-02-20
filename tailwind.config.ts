@@ -86,6 +86,12 @@ export default {
           DEFAULT: "hsl(var(--status-ok))",
           bg: "hsl(var(--status-ok-bg))",
         },
+        urgent: {
+          DEFAULT: "hsl(var(--urgent))",
+          bg: "hsl(var(--urgent-bg))",
+          border: "hsl(var(--urgent-border))",
+          foreground: "hsl(var(--urgent-foreground))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

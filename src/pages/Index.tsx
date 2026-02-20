@@ -26,7 +26,7 @@ const TAB_LABELS: Record<AppTab, string> = {
   "home": "Panoramica",
   "da-realizzare": "Da Realizzare",
   "ready-to": "Ready to Present",
-  "in-approvazione": "In Attesa Approvazione",
+  "in-approvazione": "In Revisione dal Cliente",
   "confermata": "Confermata",
 };
 

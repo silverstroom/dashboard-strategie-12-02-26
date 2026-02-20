@@ -1,4 +1,4 @@
-import { Home, Wrench, Presentation, Clock, CheckCheck } from "lucide-react";
+import { Home, Wrench, Presentation, Eye, CheckCheck } from "lucide-react";
 
 export type AppTab = "home" | "da-realizzare" | "ready-to" | "in-approvazione" | "confermata";
 
@@ -12,7 +12,7 @@ const navItems: { id: AppTab; label: string; icon: React.FC<{ className?: string
   { id: "home", label: "Home", icon: Home },
   { id: "da-realizzare", label: "Da fare", icon: Wrench },
   { id: "ready-to", label: "Ready to", icon: Presentation },
-  { id: "in-approvazione", label: "Approvaz.", icon: Clock },
+  { id: "in-approvazione", label: "In revisione", icon: Eye },
   { id: "confermata", label: "Confermata", icon: CheckCheck },
 ];
 
