@@ -1,5 +1,5 @@
 import { Strategy, StrategyStatus } from "@/data/strategies";
-import { Plus, Copy, AlertTriangle } from "lucide-react";
+import { Plus, Copy, AlertTriangle, PauseCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface StrategyTableProps {
@@ -49,12 +49,13 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
       ? strategies
       : strategies.filter((s) => s.stato_strategia === activeFilter);
 
-  // Sort: urgent ("In attesa/corretta") always first
-  const sorted = [...filtered].sort((a, b) => {
-    if (a.stato_strategia === "In attesa/corretta" && b.stato_strategia !== "In attesa/corretta") return -1;
-    if (b.stato_strategia === "In attesa/corretta" && a.stato_strategia !== "In attesa/corretta") return 1;
-    return 0;
-  });
+  // Sort: urgent first, then normal, paused last
+  const sortOrder = (stato: StrategyStatus) => {
+    if (stato === "In attesa/corretta") return 0;
+    if (stato === "In pausa") return 2;
+    return 1;
+  };
+  const sorted = [...filtered].sort((a, b) => sortOrder(a.stato_strategia) - sortOrder(b.stato_strategia));
 
   const groups = groupByAgente(sorted);
 
@@ -97,19 +98,20 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                         ? "bg-social-light text-social"
                         : "bg-sito-light text-sito";
                       const isUrgent = strategy.stato_strategia === "In attesa/corretta";
+                      const isPaused = strategy.stato_strategia === "In pausa";
 
                       return (
                         <tr
                           key={strategy.id}
                           className={`border-b cursor-pointer hover:bg-muted/30 transition-colors group ${
-                            isUrgent ? "bg-urgent-bg" : index % 2 === 1 ? "bg-muted/20" : ""
+                            isUrgent ? "bg-urgent-bg" : isPaused ? "bg-muted/40" : index % 2 === 1 ? "bg-muted/20" : ""
                           }`}
                           onClick={() => onEdit(strategy)}
                         >
                           <td className="p-4 align-middle relative font-mono text-sm">
-                            <div className={`absolute left-0 top-0 bottom-0 w-1 ${isUrgent ? "bg-urgent" : stripColor}`} />
+                            <div className={`absolute left-0 top-0 bottom-0 w-1 ${isUrgent ? "bg-urgent" : isPaused ? "bg-muted-foreground/40" : stripColor}`} />
                             <div className="flex items-center gap-1.5 pl-1">
-                              <span>{strategy.codice_cliente}</span>
+                              <span className={isPaused ? "text-muted-foreground" : ""}>{strategy.codice_cliente}</span>
                               <button
                                 className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-muted"
                                 title="Copia cliente"
@@ -127,8 +129,14 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                                   Correzione urgente
                                 </span>
                               )}
-                              <span className="font-medium break-words">{strategy.nome_cliente}</span>
-                              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${typeBadge}`}>
+                              {isPaused && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted border border-border text-muted-foreground text-[10px] font-bold uppercase tracking-wide">
+                                  <PauseCircle className="w-3 h-3" />
+                                  In pausa
+                                </span>
+                              )}
+                              <span className={`font-medium break-words ${isPaused ? "text-muted-foreground" : ""}`}>{strategy.nome_cliente}</span>
+                              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${typeBadge} ${isPaused ? "opacity-50" : ""}`}>
                                 {strategy.tipo_strategia}
                               </span>
                             </div>
@@ -170,17 +178,18 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                   ? "bg-social-light text-social"
                   : "bg-sito-light text-sito";
                 const isUrgent = strategy.stato_strategia === "In attesa/corretta";
+                const isPaused = strategy.stato_strategia === "In pausa";
 
                 return (
                   <div
                     key={strategy.id}
                     className={`rounded-xl shadow-sm border cursor-pointer active:scale-[0.98] transition-all animate-fade-in overflow-hidden ${
-                      isUrgent ? "bg-urgent-bg border-urgent-border" : "bg-card"
+                      isUrgent ? "bg-urgent-bg border-urgent-border" : isPaused ? "bg-muted/50 border-border opacity-75" : "bg-card"
                     }`}
                     style={{ animationDelay: `${index * 0.04}s` }}
                     onClick={() => onEdit(strategy)}
                   >
-                    <div className={`h-1 ${isUrgent ? "bg-urgent" : stripColor}`} />
+                    <div className={`h-1 ${isUrgent ? "bg-urgent" : isPaused ? "bg-muted-foreground/40" : stripColor}`} />
                     <div className="p-4">
                       {isUrgent && (
                         <div className="flex items-center gap-1.5 mb-2.5 px-2.5 py-1.5 rounded-lg bg-urgent-bg border border-urgent-border w-fit">
@@ -190,10 +199,18 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                           </span>
                         </div>
                       )}
+                      {isPaused && (
+                        <div className="flex items-center gap-1.5 mb-2.5 px-2.5 py-1.5 rounded-lg bg-muted border border-border w-fit">
+                          <PauseCircle className="w-3.5 h-3.5 text-muted-foreground" />
+                          <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wide">
+                            In pausa — momentaneamente ferma
+                          </span>
+                        </div>
+                      )}
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-start gap-1.5">
                           <div>
-                            <p className="font-bold text-foreground break-words">{strategy.nome_cliente}</p>
+                            <p className={`font-bold break-words ${isPaused ? "text-muted-foreground" : "text-foreground"}`}>{strategy.nome_cliente}</p>
                             <p className="text-xs text-muted-foreground font-mono">{strategy.codice_cliente}</p>
                           </div>
                           <button
@@ -204,7 +221,7 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                             <Copy className="w-3.5 h-3.5 text-muted-foreground" />
                           </button>
                         </div>
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${typeBadge}`}>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${typeBadge} ${isPaused ? "opacity-50" : ""}`}>
                           {strategy.tipo_strategia}
                         </span>
                       </div>
@@ -215,7 +232,7 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                           </span>
                           <span className="text-xs text-muted-foreground">{formatDate(strategy.aggiunta_il)}</span>
                         </div>
-                        <span className="text-lg font-bold font-mono text-foreground">{formatImporto(strategy.importo_strategia)}</span>
+                        <span className={`text-lg font-bold font-mono ${isPaused ? "text-muted-foreground" : "text-foreground"}`}>{formatImporto(strategy.importo_strategia)}</span>
                       </div>
                     </div>
                   </div>
