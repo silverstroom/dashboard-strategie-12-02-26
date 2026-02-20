@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 // Which statuses belong to each tab
 const TAB_STATUSES: Record<AppTab, StrategyStatus[]> = {
   "home": [],
-  "da-realizzare": ["Da realizzare", "In attesa/corretta"],
+  "da-realizzare": ["Da realizzare", "In attesa/corretta", "In pausa"],
   "ready-to": ["Pronta per la presentazione"],
   "in-approvazione": ["Presentata"],
   "confermata": ["Va bene !"],
@@ -227,7 +227,7 @@ const Index = () => {
         onChange={setActiveTab}
         badge={{
           "da-realizzare": agentFiltered.filter((s) =>
-            ["Da realizzare", "In attesa/corretta"].includes(s.stato_strategia)
+            ["Da realizzare", "In attesa/corretta", "In pausa"].includes(s.stato_strategia)
           ).length,
         }}
       />
