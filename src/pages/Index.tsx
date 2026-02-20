@@ -18,14 +18,16 @@ const TAB_STATUSES: Record<AppTab, StrategyStatus[]> = {
   "home": [],
   "da-realizzare": ["Da realizzare", "In attesa/corretta"],
   "ready-to": ["Pronta per la presentazione"],
-  "presentata": ["Presentata", "Va bene !"],
+  "in-approvazione": ["Presentata"],
+  "confermata": ["Va bene !"],
 };
 
 const TAB_LABELS: Record<AppTab, string> = {
   "home": "Panoramica",
   "da-realizzare": "Da Realizzare",
   "ready-to": "Ready to Present",
-  "presentata": "Presentata",
+  "in-approvazione": "In Attesa Approvazione",
+  "confermata": "Confermata",
 };
 
 const Index = () => {
@@ -188,7 +190,11 @@ const Index = () => {
 
         {activeTab === "home" ? (
           /* ---- HOME: panoramica con grafici ---- */
-          <HomeOverview strategies={agentFiltered} onNewStrategy={handleCreate} />
+          <HomeOverview
+            strategies={agentFiltered}
+            onNewStrategy={handleCreate}
+            onTabChange={(tab) => setActiveTab(tab as AppTab)}
+          />
         ) : (
           /* ---- ALTRE TAB: tabella filtrata ---- */
           <>
@@ -197,11 +203,6 @@ const Index = () => {
                 <h2 className="text-xl font-bold text-foreground">{TAB_LABELS[activeTab]}</h2>
                 <p className="text-sm text-muted-foreground mt-0.5">
                   {tabFiltered.length} strateg{tabFiltered.length === 1 ? "ia" : "ie"}
-                  {TAB_STATUSES[activeTab].length > 1 && (
-                    <span className="ml-1">
-                      ({TAB_STATUSES[activeTab].join(", ")})
-                    </span>
-                  )}
                 </p>
               </div>
               <Button size="sm" className="gap-1.5" onClick={handleCreate}>
@@ -221,7 +222,15 @@ const Index = () => {
         )}
       </main>
 
-      <BottomNav active={activeTab} onChange={setActiveTab} />
+      <BottomNav
+        active={activeTab}
+        onChange={setActiveTab}
+        badge={{
+          "da-realizzare": agentFiltered.filter((s) =>
+            ["Da realizzare", "In attesa/corretta"].includes(s.stato_strategia)
+          ).length,
+        }}
+      />
 
       <StrategyModal
         open={isModalOpen}
