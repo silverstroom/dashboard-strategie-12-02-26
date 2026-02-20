@@ -8,6 +8,7 @@ interface StrategyTableProps {
   onEdit: (strategy: Strategy) => void;
   onCreate: () => void;
   onCopy: (strategy: Strategy) => void;
+  hideHeader?: boolean;
 }
 
 const statusBadgeMap: Record<StrategyStatus, { text: string; bg: string }> = {
@@ -42,7 +43,7 @@ const groupByAgente = (strategies: Strategy[]) => {
   return keys.map((key) => ({ agente: key, items: groups[key] }));
 };
 
-const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy }: StrategyTableProps) => {
+const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hideHeader }: StrategyTableProps) => {
   const filtered =
     activeFilter === "Tutte"
       ? strategies
@@ -52,13 +53,15 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy }: S
 
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">Strategie ({filtered.length})</h2>
-        <Button size="sm" className="gap-1.5" onClick={onCreate}>
-          <Plus className="w-4 h-4" />
-          Nuova Strategia
-        </Button>
-      </div>
+      {!hideHeader && (
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-foreground">Strategie ({filtered.length})</h2>
+          <Button size="sm" className="gap-1.5" onClick={onCreate}>
+            <Plus className="w-4 h-4" />
+            Nuova Strategia
+          </Button>
+        </div>
+      )}
 
       {/* Desktop Table */}
       <div className="hidden md:block space-y-6 mt-4">
