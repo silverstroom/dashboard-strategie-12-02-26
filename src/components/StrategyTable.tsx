@@ -1,5 +1,5 @@
 import { Strategy, StrategyStatus } from "@/data/strategies";
-import { Plus, Copy, AlertTriangle, PauseCircle } from "lucide-react";
+import { Plus, Copy, AlertTriangle, PauseCircle, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface StrategyTableProps {
@@ -34,7 +34,6 @@ const groupByAgente = (strategies: Strategy[]) => {
     if (!groups[key]) groups[key] = [];
     groups[key].push(s);
   });
-  // Sort: named agents first alphabetically, "Senza agente" last
   const keys = Object.keys(groups).sort((a, b) => {
     if (a === "Senza agente") return 1;
     if (b === "Senza agente") return -1;
@@ -43,13 +42,14 @@ const groupByAgente = (strategies: Strategy[]) => {
   return keys.map((key) => ({ agente: key, items: groups[key] }));
 };
 
+const isCustom = (s: Strategy) => s.tipo_strategia === "Custom";
+
 const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hideHeader }: StrategyTableProps) => {
   const filtered =
     activeFilter === "Tutte"
       ? strategies
       : strategies.filter((s) => s.stato_strategia === activeFilter);
 
-  // Sort: urgent first, then normal, paused last
   const sortOrder = (stato: StrategyStatus) => {
     if (stato === "In attesa/corretta") return 0;
     if (stato === "In pausa") return 2;
@@ -58,6 +58,31 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
   const sorted = [...filtered].sort((a, b) => sortOrder(a.stato_strategia) - sortOrder(b.stato_strategia));
 
   const groups = groupByAgente(sorted);
+
+  const getTypeBadge = (s: Strategy) => {
+    if (s.tipo_strategia === "Custom") return "bg-custom-bg text-custom-foreground border border-custom-border";
+    if (s.tipo_strategia === "Social") return "bg-social-light text-social";
+    return "bg-sito-light text-sito";
+  };
+
+  const getStripColor = (s: Strategy) => {
+    if (s.stato_strategia === "In attesa/corretta") return "bg-urgent";
+    if (s.stato_strategia === "In pausa") return "bg-muted-foreground/40";
+    if (s.tipo_strategia === "Custom") return "bg-custom";
+    return s.tipo_strategia === "Social" ? "bg-social" : "bg-sito";
+  };
+
+  const ImportoDisplay = ({ strategy }: { strategy: Strategy }) => {
+    if (isCustom(strategy)) {
+      return (
+        <span className="inline-flex items-center gap-1 text-custom-foreground font-mono text-xs font-semibold">
+          <Star className="w-3 h-3 text-custom" />
+          {strategy.nota_custom || "3%"}
+        </span>
+      );
+    }
+    return <span>{formatImporto(strategy.importo_strategia)}</span>;
+  };
 
   return (
     <div>
@@ -93,23 +118,20 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                   <tbody>
                     {group.items.map((strategy, index) => {
                       const badge = statusBadgeMap[strategy.stato_strategia];
-                      const stripColor = strategy.tipo_strategia === "Social" ? "bg-social" : "bg-sito";
-                      const typeBadge = strategy.tipo_strategia === "Social"
-                        ? "bg-social-light text-social"
-                        : "bg-sito-light text-sito";
                       const isUrgent = strategy.stato_strategia === "In attesa/corretta";
                       const isPaused = strategy.stato_strategia === "In pausa";
+                      const custom = isCustom(strategy);
 
                       return (
                         <tr
                           key={strategy.id}
                           className={`border-b cursor-pointer hover:bg-muted/30 transition-colors group ${
-                            isUrgent ? "bg-urgent-bg" : isPaused ? "bg-muted/40" : index % 2 === 1 ? "bg-muted/20" : ""
+                            isUrgent ? "bg-urgent-bg" : isPaused ? "bg-muted/40" : custom ? "bg-custom-bg" : index % 2 === 1 ? "bg-muted/20" : ""
                           }`}
                           onClick={() => onEdit(strategy)}
                         >
                           <td className="p-4 align-middle relative font-mono text-sm">
-                            <div className={`absolute left-0 top-0 bottom-0 w-1 ${isUrgent ? "bg-urgent" : isPaused ? "bg-muted-foreground/40" : stripColor}`} />
+                            <div className={`absolute left-0 top-0 bottom-0 w-1 ${getStripColor(strategy)}`} />
                             <div className="flex items-center gap-1.5 pl-1">
                               <span className={isPaused ? "text-muted-foreground" : ""}>{strategy.codice_cliente}</span>
                               <button
@@ -123,6 +145,12 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                           </td>
                           <td className="p-4 align-middle">
                             <div className="flex items-center gap-2 flex-wrap">
+                              {custom && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-custom-bg border border-custom-border text-custom-foreground text-[10px] font-bold uppercase tracking-wide">
+                                  <Star className="w-3 h-3" />
+                                  Custom
+                                </span>
+                              )}
                               {isUrgent && (
                                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-urgent-bg border border-urgent-border text-urgent-foreground text-[10px] font-bold uppercase tracking-wide">
                                   <AlertTriangle className="w-3 h-3" />
@@ -136,8 +164,8 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                                 </span>
                               )}
                               <span className={`font-medium break-words ${isPaused ? "text-muted-foreground" : ""}`}>{strategy.nome_cliente}</span>
-                              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${typeBadge} ${isPaused ? "opacity-50" : ""}`}>
-                                {strategy.tipo_strategia}
+                              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${getTypeBadge(strategy)} ${isPaused ? "opacity-50" : ""}`}>
+                                {strategy.tipo_strategia === "Custom" ? "⭐ Custom" : strategy.tipo_strategia}
                               </span>
                             </div>
                           </td>
@@ -147,7 +175,7 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                             </span>
                           </td>
                           <td className="p-4 align-middle text-right font-mono font-semibold">
-                            {formatImporto(strategy.importo_strategia)}
+                            <ImportoDisplay strategy={strategy} />
                           </td>
                           <td className="p-4 align-middle text-right text-muted-foreground text-sm">
                             {formatDate(strategy.aggiunta_il)}
@@ -173,24 +201,29 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
             <div className="flex flex-col gap-3">
               {group.items.map((strategy, index) => {
                 const badge = statusBadgeMap[strategy.stato_strategia];
-                const stripColor = strategy.tipo_strategia === "Social" ? "bg-social" : "bg-sito";
-                const typeBadge = strategy.tipo_strategia === "Social"
-                  ? "bg-social-light text-social"
-                  : "bg-sito-light text-sito";
                 const isUrgent = strategy.stato_strategia === "In attesa/corretta";
                 const isPaused = strategy.stato_strategia === "In pausa";
+                const custom = isCustom(strategy);
 
                 return (
                   <div
                     key={strategy.id}
                     className={`rounded-xl shadow-sm border cursor-pointer active:scale-[0.98] transition-all animate-fade-in overflow-hidden ${
-                      isUrgent ? "bg-urgent-bg border-urgent-border" : isPaused ? "bg-muted/50 border-border opacity-75" : "bg-card"
+                      isUrgent ? "bg-urgent-bg border-urgent-border" : isPaused ? "bg-muted/50 border-border opacity-75" : custom ? "bg-custom-bg border-custom-border" : "bg-card"
                     }`}
                     style={{ animationDelay: `${index * 0.04}s` }}
                     onClick={() => onEdit(strategy)}
                   >
-                    <div className={`h-1 ${isUrgent ? "bg-urgent" : isPaused ? "bg-muted-foreground/40" : stripColor}`} />
+                    <div className={`h-1 ${getStripColor(strategy)}`} />
                     <div className="p-4">
+                      {custom && (
+                        <div className="flex items-center gap-1.5 mb-2.5 px-2.5 py-1.5 rounded-lg bg-custom-bg border border-custom-border w-fit">
+                          <Star className="w-3.5 h-3.5 text-custom" />
+                          <span className="text-[11px] font-bold text-custom-foreground uppercase tracking-wide">
+                            Custom — {strategy.nota_custom || "3% della commissione"}
+                          </span>
+                        </div>
+                      )}
                       {isUrgent && (
                         <div className="flex items-center gap-1.5 mb-2.5 px-2.5 py-1.5 rounded-lg bg-urgent-bg border border-urgent-border w-fit">
                           <AlertTriangle className="w-3.5 h-3.5 text-urgent-foreground" />
@@ -221,8 +254,8 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                             <Copy className="w-3.5 h-3.5 text-muted-foreground" />
                           </button>
                         </div>
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${typeBadge} ${isPaused ? "opacity-50" : ""}`}>
-                          {strategy.tipo_strategia}
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${getTypeBadge(strategy)} ${isPaused ? "opacity-50" : ""}`}>
+                          {strategy.tipo_strategia === "Custom" ? "⭐ Custom" : strategy.tipo_strategia}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
@@ -232,7 +265,14 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                           </span>
                           <span className="text-xs text-muted-foreground">{formatDate(strategy.aggiunta_il)}</span>
                         </div>
-                        <span className={`text-lg font-bold font-mono ${isPaused ? "text-muted-foreground" : "text-foreground"}`}>{formatImporto(strategy.importo_strategia)}</span>
+                        <span className={`font-bold font-mono ${isPaused ? "text-muted-foreground" : "text-foreground"} ${custom ? "text-sm" : "text-lg"}`}>
+                          {custom ? (
+                            <span className="inline-flex items-center gap-1 text-custom-foreground">
+                              <Star className="w-3 h-3 text-custom" />
+                              {strategy.nota_custom || "3%"}
+                            </span>
+                          ) : formatImporto(strategy.importo_strategia)}
+                        </span>
                       </div>
                     </div>
                   </div>
