@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Star } from "lucide-react";
 
 const allStati: StrategyStatus[] = [
   "In pausa",
@@ -27,7 +28,7 @@ const allStati: StrategyStatus[] = [
   "Va bene !",
 ];
 
-const allTipi: StrategyType[] = ["Social", "Sito"];
+const allTipi: StrategyType[] = ["Social", "Sito", "Custom"];
 
 interface StrategyModalProps {
   open: boolean;
@@ -37,11 +38,6 @@ interface StrategyModalProps {
   onDelete: (id: string) => void;
   strategies: Strategy[];
 }
-
-const formatDateInput = (dateStr: string) => {
-  // YYYY-MM-DD
-  return dateStr;
-};
 
 const formatDateDisplay = (dateStr: string) => {
   const d = new Date(dateStr);
@@ -59,6 +55,7 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
   const [dataConferma, setDataConferma] = useState<string | null>(null);
   const [prevStato, setPrevStato] = useState<StrategyStatus>("Da realizzare");
   const [agente, setAgente] = useState("");
+  const [notaCustom, setNotaCustom] = useState("");
 
   useEffect(() => {
     if (strategy) {
@@ -70,6 +67,7 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
       setDataConferma(strategy.data_conferma);
       setPrevStato(strategy.stato_strategia);
       setAgente(strategy.agente || "");
+      setNotaCustom(strategy.nota_custom || "");
     } else {
       setCodice("");
       setTipo("Social");
@@ -79,9 +77,11 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
       setDataConferma(null);
       setPrevStato("Da realizzare");
       setAgente("");
+      setNotaCustom("");
     }
   }, [strategy, open]);
 
+  const isCustom = tipo === "Custom";
   const importo = getImporto(tipo, stato);
 
   const handleStatoChange = (newStato: StrategyStatus) => {
@@ -110,6 +110,7 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
       aggiunta_il: aggiuntaIl,
       data_conferma: dataConferma,
       agente,
+      nota_custom: isCustom ? (notaCustom || "3% della commissione") : undefined,
     });
   };
 
@@ -119,6 +120,17 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
         <DialogHeader>
           <DialogTitle>{isEdit ? "Modifica Strategia" : "Nuova Strategia"}</DialogTitle>
         </DialogHeader>
+
+        {/* Custom banner */}
+        {isCustom && (
+          <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-custom-bg border border-custom-border">
+            <Star className="w-4 h-4 text-custom" />
+            <span className="text-sm font-semibold text-custom-foreground">
+              Strategia Custom — importo a percentuale
+            </span>
+          </div>
+        )}
+
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
             <Label htmlFor="codice">Codice cliente</Label>
@@ -130,7 +142,9 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 {allTipi.map((t) => (
-                  <SelectItem key={t} value={t}>{t}</SelectItem>
+                  <SelectItem key={t} value={t}>
+                    {t === "Custom" ? "⭐ Custom (percentuale)" : t}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -139,6 +153,24 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
             <Label htmlFor="nome">Nome cliente</Label>
             <Input id="nome" value={nome} onChange={(e) => setNome(e.target.value)} />
           </div>
+
+          {/* Custom-specific: nota commissione */}
+          {isCustom && (
+            <div className="grid gap-2">
+              <Label htmlFor="nota_custom">Dettaglio commissione</Label>
+              <Input
+                id="nota_custom"
+                value={notaCustom}
+                onChange={(e) => setNotaCustom(e.target.value)}
+                placeholder="3% della commissione"
+                className="border-custom-border focus-visible:ring-custom"
+              />
+              <p className="text-[11px] text-muted-foreground">
+                L'importo verrà definito in base alla commissione dell'agente
+              </p>
+            </div>
+          )}
+
           <div className="grid gap-2">
             <Label>Stato strategia</Label>
             <Select value={stato} onValueChange={(v) => handleStatoChange(v as StrategyStatus)}>
@@ -150,10 +182,22 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
               </SelectContent>
             </Select>
           </div>
+
+          {/* Importo: different display for Custom */}
           <div className="grid gap-2">
-            <Label>Importo (auto)</Label>
-            <Input value={`€${importo}`} readOnly className="font-mono bg-muted/30" />
+            <Label>Importo</Label>
+            {isCustom ? (
+              <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-custom-bg border border-custom-border">
+                <Star className="w-3.5 h-3.5 text-custom" />
+                <span className="text-sm font-mono font-semibold text-custom-foreground">
+                  {notaCustom || "3% della commissione"}
+                </span>
+              </div>
+            ) : (
+              <Input value={`€${importo}`} readOnly className="font-mono bg-muted/30" />
+            )}
           </div>
+
           <div className="grid gap-2">
             <Label htmlFor="agente">Agente</Label>
             <Input id="agente" value={agente} onChange={(e) => setAgente(e.target.value)} placeholder="Nome agente" />

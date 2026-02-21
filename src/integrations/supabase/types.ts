@@ -24,6 +24,7 @@ export type Database = {
           id: string
           importo_strategia: number
           nome_cliente: string
+          nota_custom: string | null
           stato_strategia: string
           tipo_strategia: string
           updated_at: string
@@ -37,6 +38,7 @@ export type Database = {
           id?: string
           importo_strategia?: number
           nome_cliente: string
+          nota_custom?: string | null
           stato_strategia: string
           tipo_strategia: string
           updated_at?: string
@@ -50,6 +52,7 @@ export type Database = {
           id?: string
           importo_strategia?: number
           nome_cliente?: string
+          nota_custom?: string | null
           stato_strategia?: string
           tipo_strategia?: string
           updated_at?: string

@@ -40,6 +40,7 @@ const HomeOverview = ({ strategies, onNewStrategy, onTabChange }: HomeOverviewPr
 
     const socialCount = strategies.filter((s) => s.tipo_strategia === "Social").length;
     const sitoCount = strategies.filter((s) => s.tipo_strategia === "Sito").length;
+    const customCount = strategies.filter((s) => s.tipo_strategia === "Custom").length;
 
     // Agenti: raggruppa per agente con fatturato confermato e numero strategie
     const agentiMap: Record<string, { confermato: number; totale: number; count: number }> = {};
@@ -64,6 +65,7 @@ const HomeOverview = ({ strategies, onNewStrategy, onTabChange }: HomeOverviewPr
       inPausa,
       socialCount,
       sitoCount,
+      customCount,
       agentiData,
     };
   }, [strategies]);
@@ -257,21 +259,12 @@ const HomeOverview = ({ strategies, onNewStrategy, onTabChange }: HomeOverviewPr
         <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-3">
           Tipologia Strategie
         </p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           <div className="flex items-center gap-3 rounded-lg bg-muted/20 px-3 py-2.5">
             <div className="w-3 h-3 rounded-full bg-social shrink-0" />
             <div>
               <p className="text-lg font-black font-mono text-foreground">{stats.socialCount}</p>
               <p className="text-[10px] text-muted-foreground">Social</p>
-            </div>
-            <div className="ml-auto">
-              <p className="text-sm font-bold font-mono text-foreground">
-                {formatImporto(
-                  strategies
-                    .filter((s) => s.tipo_strategia === "Social")
-                    .reduce((sum, s) => sum + s.importo_strategia, 0)
-                )}
-              </p>
             </div>
           </div>
           <div className="flex items-center gap-3 rounded-lg bg-muted/20 px-3 py-2.5">
@@ -280,14 +273,12 @@ const HomeOverview = ({ strategies, onNewStrategy, onTabChange }: HomeOverviewPr
               <p className="text-lg font-black font-mono text-foreground">{stats.sitoCount}</p>
               <p className="text-[10px] text-muted-foreground">Sito</p>
             </div>
-            <div className="ml-auto">
-              <p className="text-sm font-bold font-mono text-foreground">
-                {formatImporto(
-                  strategies
-                    .filter((s) => s.tipo_strategia === "Sito")
-                    .reduce((sum, s) => sum + s.importo_strategia, 0)
-                )}
-              </p>
+          </div>
+          <div className="flex items-center gap-3 rounded-lg bg-custom-bg border border-custom-border px-3 py-2.5">
+            <div className="w-3 h-3 rounded-full bg-custom shrink-0" />
+            <div>
+              <p className="text-lg font-black font-mono text-foreground">{stats.customCount}</p>
+              <p className="text-[10px] text-custom-foreground">Custom</p>
             </div>
           </div>
         </div>

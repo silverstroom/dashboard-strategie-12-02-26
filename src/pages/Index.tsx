@@ -100,6 +100,7 @@ const Index = () => {
           aggiunta_il: s.aggiunta_il,
           data_conferma: s.data_conferma,
           agente: (s as any).agente || "",
+          nota_custom: (s as any).nota_custom || undefined,
         }))
       );
     }
@@ -117,7 +118,7 @@ const Index = () => {
   };
 
   const handleSave = useCallback(async (strategy: Strategy) => {
-    const payload = {
+    const payload: Record<string, any> = {
       codice_cliente: strategy.codice_cliente,
       nome_cliente: strategy.nome_cliente,
       tipo_strategia: strategy.tipo_strategia,
@@ -126,6 +127,7 @@ const Index = () => {
       aggiunta_il: strategy.aggiunta_il,
       data_conferma: strategy.data_conferma,
       agente: strategy.agente,
+      nota_custom: strategy.nota_custom || null,
     };
 
     const isExisting = strategies.some((s) => s.id === strategy.id);
@@ -133,13 +135,13 @@ const Index = () => {
     if (isExisting) {
       const { error } = await supabase
         .from("strategies")
-        .update(payload)
+        .update(payload as any)
         .eq("id", strategy.id);
       if (error) { toast.error("Errore nel salvataggio"); console.error(error); return; }
     } else {
       const { error } = await supabase
         .from("strategies")
-        .insert(payload);
+        .insert(payload as any);
       if (error) { toast.error("Errore nella creazione"); console.error(error); return; }
     }
     setIsModalOpen(false);

@@ -92,6 +92,13 @@ export default {
           border: "hsl(var(--urgent-border))",
           foreground: "hsl(var(--urgent-foreground))",
         },
+        custom: {
+          DEFAULT: "hsl(var(--custom))",
+          light: "hsl(var(--custom-light))",
+          bg: "hsl(var(--custom-bg))",
+          border: "hsl(var(--custom-border))",
+          foreground: "hsl(var(--custom-foreground))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

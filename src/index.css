@@ -62,6 +62,12 @@
     --urgent-border: 25 95% 78%;
     --urgent-foreground: 25 95% 30%;
 
+    --custom: 38 92% 50%;
+    --custom-light: 38 92% 93%;
+    --custom-bg: 38 92% 95%;
+    --custom-border: 38 92% 70%;
+    --custom-foreground: 38 92% 25%;
+
     --chart-earned: 161 93% 30%;
     --chart-potential: 0 0% 63%;
     --chart-social: 161 70% 38%;
@@ -110,6 +116,12 @@
     --urgent-bg: 25 60% 15%;
     --urgent-border: 25 70% 35%;
     --urgent-foreground: 25 95% 80%;
+
+    --custom: 38 92% 55%;
+    --custom-light: 38 60% 18%;
+    --custom-bg: 38 50% 15%;
+    --custom-border: 38 70% 35%;
+    --custom-foreground: 38 92% 80%;
   }
 }
 
