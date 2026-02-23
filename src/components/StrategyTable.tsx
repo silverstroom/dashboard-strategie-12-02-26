@@ -151,7 +151,7 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                                   Custom
                                 </span>
                               )}
-                              {isUrgent && (
+                              {isUrgent && !custom && (
                                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-urgent-bg border border-urgent-border text-urgent-foreground text-[10px] font-bold uppercase tracking-wide">
                                   <AlertTriangle className="w-3 h-3" />
                                   Correzione urgente
@@ -224,7 +224,7 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                           </span>
                         </div>
                       )}
-                      {isUrgent && (
+                      {isUrgent && !custom && (
                         <div className="flex items-center gap-1.5 mb-2.5 px-2.5 py-1.5 rounded-lg bg-urgent-bg border border-urgent-border w-fit">
                           <AlertTriangle className="w-3.5 h-3.5 text-urgent-foreground" />
                           <span className="text-[11px] font-bold text-urgent-foreground uppercase tracking-wide">
