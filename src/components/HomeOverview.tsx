@@ -171,7 +171,7 @@ const HomeOverview = ({ strategies, onNewStrategy, onTabChange }: HomeOverviewPr
             {
               label: "In pausa",
               count: stats.inPausa.length,
-              tab: null,
+              tab: "da-realizzare",
               color: "text-status-pausa",
               icon: AlertCircle,
             },

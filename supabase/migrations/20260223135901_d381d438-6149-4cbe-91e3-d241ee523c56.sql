@@ -1,0 +1,2 @@
+ALTER TABLE public.strategies DROP CONSTRAINT strategies_tipo_strategia_check;
+ALTER TABLE public.strategies ADD CONSTRAINT strategies_tipo_strategia_check CHECK (tipo_strategia = ANY (ARRAY['Social'::text, 'Sito'::text, 'Custom'::text]));
