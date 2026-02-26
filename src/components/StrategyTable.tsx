@@ -18,6 +18,7 @@ const statusBadgeMap: Record<StrategyStatus, { text: string; bg: string }> = {
   "Pronta per la presentazione": { text: "text-status-pronta", bg: "bg-status-pronta-bg" },
   "Presentata": { text: "text-status-presentata", bg: "bg-status-presentata-bg" },
   "In pausa": { text: "text-status-pausa", bg: "bg-status-pausa-bg" },
+  "Archiviata": { text: "text-muted-foreground", bg: "bg-muted/50" },
 };
 
 const formatDate = (dateStr: string) => {

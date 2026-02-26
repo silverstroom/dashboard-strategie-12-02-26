@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Star } from "lucide-react";
+import { Star, Archive } from "lucide-react";
 
 const allStati: StrategyStatus[] = [
   "In pausa",
@@ -217,6 +217,16 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
             {isEdit && (
               <Button variant="destructive" onClick={() => onDelete(strategy!.id)} className="flex-1 sm:flex-none">
                 Elimina
+              </Button>
+            )}
+            {isEdit && stato === "Va bene !" && (
+              <Button
+                variant="outline"
+                className="gap-1.5 text-muted-foreground flex-1 sm:flex-none"
+                onClick={() => { handleStatoChange("Archiviata"); }}
+              >
+                <Archive className="w-3.5 h-3.5" />
+                Archivia
               </Button>
             )}
           </div>
