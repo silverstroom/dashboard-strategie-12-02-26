@@ -1,5 +1,5 @@
 import { Strategy, StrategyStatus } from "@/data/strategies";
-import { Plus, Copy, AlertTriangle, PauseCircle, Star } from "lucide-react";
+import { Plus, Copy, AlertTriangle, PauseCircle, Star, Archive, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface StrategyTableProps {
@@ -8,6 +8,7 @@ interface StrategyTableProps {
   onEdit: (strategy: Strategy) => void;
   onCreate: () => void;
   onCopy: (strategy: Strategy) => void;
+  onQuickAction?: (strategy: Strategy, newStatus: StrategyStatus) => void;
   hideHeader?: boolean;
 }
 
@@ -45,7 +46,7 @@ const groupByAgente = (strategies: Strategy[]) => {
 
 const isCustom = (s: Strategy) => s.tipo_strategia === "Custom";
 
-const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hideHeader }: StrategyTableProps) => {
+const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQuickAction, hideHeader }: StrategyTableProps) => {
   const filtered =
     activeFilter === "Tutte"
       ? strategies
@@ -85,6 +86,36 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
     return <span>{formatImporto(strategy.importo_strategia)}</span>;
   };
 
+  // Determine which quick actions to show for a strategy
+  const canConfirm = (s: Strategy) => s.stato_strategia !== "Va bene !" && s.stato_strategia !== "Archiviata";
+  const canArchive = (s: Strategy) => s.stato_strategia === "Va bene !";
+
+  const QuickActions = ({ strategy }: { strategy: Strategy }) => {
+    if (!onQuickAction) return null;
+    return (
+      <div className="flex items-center gap-1">
+        {canConfirm(strategy) && (
+          <button
+            className="p-1.5 rounded-lg hover:bg-status-ok-bg text-muted-foreground hover:text-status-ok transition-colors"
+            title="Conferma (Va bene !)"
+            onClick={(e) => { e.stopPropagation(); onQuickAction(strategy, "Va bene !"); }}
+          >
+            <Check className="w-4 h-4" />
+          </button>
+        )}
+        {canArchive(strategy) && (
+          <button
+            className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            title="Archivia"
+            onClick={(e) => { e.stopPropagation(); onQuickAction(strategy, "Archiviata"); }}
+          >
+            <Archive className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div>
       {!hideHeader && (
@@ -114,6 +145,7 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                       <th className="h-12 px-4 text-left align-middle text-muted-foreground font-semibold">Stato</th>
                       <th className="h-12 px-4 text-right align-middle text-muted-foreground font-semibold">Importo</th>
                       <th className="h-12 px-4 text-right align-middle text-muted-foreground font-semibold">Aggiunta il</th>
+                      {onQuickAction && <th className="h-12 px-2 align-middle text-muted-foreground font-semibold w-[80px]"></th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -181,6 +213,11 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                           <td className="p-4 align-middle text-right text-muted-foreground text-sm">
                             {formatDate(strategy.aggiunta_il)}
                           </td>
+                          {onQuickAction && (
+                            <td className="p-2 align-middle">
+                              <QuickActions strategy={strategy} />
+                            </td>
+                          )}
                         </tr>
                       );
                     })}
@@ -255,9 +292,12 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, hid
                             <Copy className="w-3.5 h-3.5 text-muted-foreground" />
                           </button>
                         </div>
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${getTypeBadge(strategy)} ${isPaused ? "opacity-50" : ""}`}>
-                          {strategy.tipo_strategia === "Custom" ? "⭐ Custom" : strategy.tipo_strategia}
-                        </span>
+                        <div className="flex items-center gap-1">
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${getTypeBadge(strategy)} ${isPaused ? "opacity-50" : ""}`}>
+                            {strategy.tipo_strategia === "Custom" ? "⭐ Custom" : strategy.tipo_strategia}
+                          </span>
+                          {onQuickAction && <QuickActions strategy={strategy} />}
+                        </div>
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">

@@ -161,6 +161,26 @@ const Index = () => {
     toast("Copiato negli appunti");
   };
 
+  const handleQuickAction = useCallback(async (strategy: Strategy, newStatus: StrategyStatus) => {
+    const payload: Record<string, any> = {
+      stato_strategia: newStatus,
+    };
+    if (newStatus === "Va bene !") {
+      payload.data_conferma = new Date().toISOString().split("T")[0];
+    }
+    const { error } = await supabase
+      .from("strategies")
+      .update(payload as any)
+      .eq("id", strategy.id);
+    if (error) {
+      toast.error("Errore nell'aggiornamento");
+      console.error(error);
+      return;
+    }
+    toast(newStatus === "Archiviata" ? "Strategia archiviata" : "Strategia confermata ✅");
+    fetchStrategies();
+  }, []);
+
   // Filter by agent
   const agentFiltered = useMemo(() => {
     if (activeAgent === "Tutti") return strategies;
@@ -225,6 +245,7 @@ const Index = () => {
                   onEdit={handleEdit}
                   onCreate={handleCreate}
                   onCopy={handleCopy}
+                  onQuickAction={handleQuickAction}
                   hideHeader
                 />
 
@@ -273,6 +294,7 @@ const Index = () => {
                 onEdit={handleEdit}
                 onCreate={handleCreate}
                 onCopy={handleCopy}
+                onQuickAction={handleQuickAction}
                 hideHeader
               />
             )}
