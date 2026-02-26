@@ -10,7 +10,7 @@ import HomeOverview from "@/components/HomeOverview";
 import { Strategy, StrategyStatus, getImporto } from "@/data/strategies";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus } from "lucide-react";
+import { Plus, Archive, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // Which statuses belong to each tab
@@ -19,7 +19,7 @@ const TAB_STATUSES: Record<AppTab, StrategyStatus[]> = {
   "da-realizzare": ["Da realizzare", "In attesa/corretta", "In pausa"],
   "ready-to": ["Pronta per la presentazione"],
   "in-approvazione": ["Presentata"],
-  "confermata": ["Va bene !"],
+  "confermata": ["Va bene !", "Archiviata"],
 };
 
 const TAB_LABELS: Record<AppTab, string> = {
@@ -37,6 +37,7 @@ const Index = () => {
   const [editingStrategy, setEditingStrategy] = useState<Strategy | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showArchivio, setShowArchivio] = useState(false);
   const navigate = useNavigate();
 
   // Check auth and load data
@@ -204,7 +205,9 @@ const Index = () => {
               <div>
                 <h2 className="text-xl font-bold text-foreground">{TAB_LABELS[activeTab]}</h2>
                 <p className="text-sm text-muted-foreground mt-0.5">
-                  {tabFiltered.length} strateg{tabFiltered.length === 1 ? "ia" : "ie"}
+                  {activeTab === "confermata"
+                    ? `${tabFiltered.filter(s => s.stato_strategia === "Va bene !").length} confermate`
+                    : `${tabFiltered.length} strateg${tabFiltered.length === 1 ? "ia" : "ie"}`}
                 </p>
               </div>
               <Button size="sm" className="gap-1.5" onClick={handleCreate}>
@@ -212,14 +215,67 @@ const Index = () => {
                 Nuova
               </Button>
             </div>
-            <StrategyTable
-              strategies={tabFiltered}
-              activeFilter="Tutte"
-              onEdit={handleEdit}
-              onCreate={handleCreate}
-              onCopy={handleCopy}
-              hideHeader
-            />
+
+            {activeTab === "confermata" ? (
+              <>
+                {/* Active confirmed strategies */}
+                <StrategyTable
+                  strategies={tabFiltered.filter(s => s.stato_strategia === "Va bene !")}
+                  activeFilter="Tutte"
+                  onEdit={handleEdit}
+                  onCreate={handleCreate}
+                  onCopy={handleCopy}
+                  hideHeader
+                />
+
+                {/* Archivio section */}
+                {(() => {
+                  const archived = tabFiltered.filter(s => s.stato_strategia === "Archiviata");
+                  return (
+                    <div className="mt-6">
+                      <button
+                        onClick={() => setShowArchivio(!showArchivio)}
+                        className="flex items-center gap-2 w-full px-4 py-3 rounded-xl bg-muted/50 border border-border hover:bg-muted transition-colors"
+                      >
+                        <Archive className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm font-semibold text-muted-foreground">
+                          Archivio ({archived.length})
+                        </span>
+                        {showArchivio
+                          ? <ChevronUp className="w-4 h-4 text-muted-foreground ml-auto" />
+                          : <ChevronDown className="w-4 h-4 text-muted-foreground ml-auto" />}
+                      </button>
+                      {showArchivio && archived.length > 0 && (
+                        <div className="mt-3 opacity-75">
+                          <StrategyTable
+                            strategies={archived}
+                            activeFilter="Tutte"
+                            onEdit={handleEdit}
+                            onCreate={handleCreate}
+                            onCopy={handleCopy}
+                            hideHeader
+                          />
+                        </div>
+                      )}
+                      {showArchivio && archived.length === 0 && (
+                        <p className="text-sm text-muted-foreground mt-3 text-center py-6">
+                          Nessuna strategia archiviata
+                        </p>
+                      )}
+                    </div>
+                  );
+                })()}
+              </>
+            ) : (
+              <StrategyTable
+                strategies={tabFiltered}
+                activeFilter="Tutte"
+                onEdit={handleEdit}
+                onCreate={handleCreate}
+                onCopy={handleCopy}
+                hideHeader
+              />
+            )}
           </>
         )}
       </main>

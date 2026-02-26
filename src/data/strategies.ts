@@ -4,7 +4,8 @@ export type StrategyStatus =
   | "In attesa/corretta"
   | "Pronta per la presentazione"
   | "Presentata"
-  | "In pausa";
+  | "In pausa"
+  | "Archiviata";
 
 export type StrategyType = "Social" | "Sito" | "Custom";
 
