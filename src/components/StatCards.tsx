@@ -20,15 +20,17 @@ const StatCards = ({ strategies }: StatCardsProps) => {
   const [showDettaglioTipo, setShowDettaglioTipo] = useState(false);
 
   const stats = useMemo(() => {
-    const fatturate = strategies.filter((s) => s.stato_strategia === "Va bene !");
-    const inLavorazione = strategies.filter(
+    // Escludi archiviate dalle statistiche principali
+    const active = strategies.filter((s) => s.stato_strategia !== "Archiviata");
+    const fatturate = active.filter((s) => s.stato_strategia === "Va bene !");
+    const inLavorazione = active.filter(
       (s) => s.stato_strategia !== "Va bene !" && s.stato_strategia !== "In pausa"
     );
     const fatturatoConfermato = fatturate.reduce((sum, s) => sum + s.importo_strategia, 0);
     const fatturatoPotenziale = inLavorazione.reduce((sum, s) => sum + s.importo_strategia, 0);
     const totale = fatturatoConfermato + fatturatoPotenziale;
-    const socialCount = strategies.filter((s) => s.tipo_strategia === "Social").length;
-    const sitoCount = strategies.filter((s) => s.tipo_strategia === "Sito").length;
+    const socialCount = active.filter((s) => s.tipo_strategia === "Social").length;
+    const sitoCount = active.filter((s) => s.tipo_strategia === "Sito").length;
 
     // Count per stato for "in lavorazione"
     const statoCounts: Record<string, number> = {};

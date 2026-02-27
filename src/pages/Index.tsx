@@ -10,7 +10,7 @@ import HomeOverview from "@/components/HomeOverview";
 import { Strategy, StrategyStatus, getImporto } from "@/data/strategies";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, Archive, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Archive, ChevronDown, ChevronUp, Pause } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // Which statuses belong to each tab
@@ -38,6 +38,7 @@ const Index = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showArchivio, setShowArchivio] = useState(false);
+  const [showInPausa, setShowInPausa] = useState(false);
   const navigate = useNavigate();
 
   // Check auth and load data
@@ -227,6 +228,8 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground mt-0.5">
                   {activeTab === "confermata"
                     ? `${tabFiltered.filter(s => s.stato_strategia === "Va bene !").length} confermate`
+                    : activeTab === "da-realizzare"
+                    ? `${tabFiltered.filter(s => s.stato_strategia !== "In pausa").length} attive · ${tabFiltered.filter(s => s.stato_strategia === "In pausa").length} in pausa`
                     : `${tabFiltered.length} strateg${tabFiltered.length === 1 ? "ia" : "ie"}`}
                 </p>
               </div>
@@ -281,6 +284,58 @@ const Index = () => {
                       {showArchivio && archived.length === 0 && (
                         <p className="text-sm text-muted-foreground mt-3 text-center py-6">
                           Nessuna strategia archiviata
+                        </p>
+                      )}
+                    </div>
+                  );
+                })()}
+              </>
+            ) : activeTab === "da-realizzare" ? (
+              <>
+                {/* Strategie attive (escluse In pausa) */}
+                <StrategyTable
+                  strategies={tabFiltered.filter(s => s.stato_strategia !== "In pausa")}
+                  activeFilter="Tutte"
+                  onEdit={handleEdit}
+                  onCreate={handleCreate}
+                  onCopy={handleCopy}
+                  onQuickAction={handleQuickAction}
+                  hideHeader
+                />
+
+                {/* Sezione In Pausa */}
+                {(() => {
+                  const paused = tabFiltered.filter(s => s.stato_strategia === "In pausa");
+                  return (
+                    <div className="mt-6">
+                      <button
+                        onClick={() => setShowInPausa(!showInPausa)}
+                        className="flex items-center gap-2 w-full px-4 py-3 rounded-xl bg-muted/50 border border-border hover:bg-muted transition-colors"
+                      >
+                        <Pause className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm font-semibold text-muted-foreground">
+                          In pausa ({paused.length})
+                        </span>
+                        {showInPausa
+                          ? <ChevronUp className="w-4 h-4 text-muted-foreground ml-auto" />
+                          : <ChevronDown className="w-4 h-4 text-muted-foreground ml-auto" />}
+                      </button>
+                      {showInPausa && paused.length > 0 && (
+                        <div className="mt-3 opacity-75">
+                          <StrategyTable
+                            strategies={paused}
+                            activeFilter="Tutte"
+                            onEdit={handleEdit}
+                            onCreate={handleCreate}
+                            onCopy={handleCopy}
+                            onQuickAction={handleQuickAction}
+                            hideHeader
+                          />
+                        </div>
+                      )}
+                      {showInPausa && paused.length === 0 && (
+                        <p className="text-sm text-muted-foreground mt-3 text-center py-6">
+                          Nessuna strategia in pausa
                         </p>
                       )}
                     </div>
