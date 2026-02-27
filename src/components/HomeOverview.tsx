@@ -1,5 +1,5 @@
 import { Strategy, StrategyStatus } from "@/data/strategies";
-import { CheckCircle2, Clock, Wrench, Presentation, TrendingUp, Plus, AlertCircle, AlertTriangle } from "lucide-react";
+import { CheckCircle2, Clock, Wrench, Presentation, TrendingUp, Plus, AlertCircle, AlertTriangle, Archive } from "lucide-react";
 import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,26 +25,32 @@ const formatImportoFull = (n: number) => `€${n.toLocaleString("it-IT")}`;
 
 const HomeOverview = ({ strategies, onNewStrategy, onTabChange }: HomeOverviewProps) => {
   const stats = useMemo(() => {
-    const confermata = strategies.filter((s) => s.stato_strategia === "Va bene !");
-    const daFare = strategies.filter((s) =>
+    // Escludi archiviate dalle statistiche principali
+    const active = strategies.filter((s) => s.stato_strategia !== "Archiviata");
+    const archived = strategies.filter((s) => s.stato_strategia === "Archiviata");
+
+    const confermata = active.filter((s) => s.stato_strategia === "Va bene !");
+    const daFare = active.filter((s) =>
       ["Da realizzare", "In attesa/corretta"].includes(s.stato_strategia)
     );
-    const readyTo = strategies.filter((s) => s.stato_strategia === "Pronta per la presentazione");
-    const inApprovazione = strategies.filter((s) => s.stato_strategia === "Presentata");
-    const inPausa = strategies.filter((s) => s.stato_strategia === "In pausa");
+    const readyTo = active.filter((s) => s.stato_strategia === "Pronta per la presentazione");
+    const inApprovazione = active.filter((s) => s.stato_strategia === "Presentata");
+    const inPausa = active.filter((s) => s.stato_strategia === "In pausa");
 
     const fatturatoConfermato = confermata.reduce((sum, s) => sum + s.importo_strategia, 0);
-    const fatturatoPotenziale = strategies
+    const fatturatoPotenziale = active
       .filter((s) => s.stato_strategia !== "Va bene !" && s.stato_strategia !== "In pausa")
       .reduce((sum, s) => sum + s.importo_strategia, 0);
 
-    const socialCount = strategies.filter((s) => s.tipo_strategia === "Social").length;
-    const sitoCount = strategies.filter((s) => s.tipo_strategia === "Sito").length;
-    const customCount = strategies.filter((s) => s.tipo_strategia === "Custom").length;
+    const fatturatoArchiviato = archived.reduce((sum, s) => sum + s.importo_strategia, 0);
 
-    // Agenti: raggruppa per agente con fatturato confermato e numero strategie
+    const socialCount = active.filter((s) => s.tipo_strategia === "Social").length;
+    const sitoCount = active.filter((s) => s.tipo_strategia === "Sito").length;
+    const customCount = active.filter((s) => s.tipo_strategia === "Custom").length;
+
+    // Agenti: raggruppa per agente con fatturato confermato e numero strategie (escluse archiviate)
     const agentiMap: Record<string, { confermato: number; totale: number; count: number }> = {};
-    strategies.forEach((s) => {
+    active.forEach((s) => {
       const key = s.agente || "N/A";
       if (!agentiMap[key]) agentiMap[key] = { confermato: 0, totale: 0, count: 0 };
       agentiMap[key].count += 1;
@@ -58,6 +64,8 @@ const HomeOverview = ({ strategies, onNewStrategy, onTabChange }: HomeOverviewPr
     return {
       fatturatoConfermato,
       fatturatoPotenziale,
+      fatturatoArchiviato,
+      archived,
       daFare,
       readyTo,
       inApprovazione,
@@ -67,6 +75,7 @@ const HomeOverview = ({ strategies, onNewStrategy, onTabChange }: HomeOverviewPr
       sitoCount,
       customCount,
       agentiData,
+      activeCount: active.length,
     };
   }, [strategies]);
 
@@ -85,7 +94,7 @@ const HomeOverview = ({ strategies, onNewStrategy, onTabChange }: HomeOverviewPr
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold text-foreground">Panoramica</h2>
-          <p className="text-sm text-muted-foreground">{strategies.length} strategie totali</p>
+          <p className="text-sm text-muted-foreground">{stats.activeCount} strategie attive</p>
         </div>
         <Button size="sm" className="gap-1.5" onClick={onNewStrategy}>
           <Plus className="w-4 h-4" />
@@ -283,6 +292,29 @@ const HomeOverview = ({ strategies, onNewStrategy, onTabChange }: HomeOverviewPr
           </div>
         </div>
       </div>
+
+      {/* ── Archivio stats ── */}
+      {stats.archived.length > 0 && (
+        <div className="rounded-xl border border-dashed border-border bg-muted/20 shadow-sm p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Archive className="w-4 h-4 text-muted-foreground" />
+            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+              Archivio · Fatturate e Concluse
+            </p>
+          </div>
+          <div className="flex items-end gap-4">
+            <div>
+              <span className="text-2xl font-black font-mono text-muted-foreground">
+                {formatImportoFull(stats.fatturatoArchiviato)}
+              </span>
+              <p className="text-[10px] text-muted-foreground">fatturato totale archiviato</p>
+            </div>
+            <span className="text-sm font-mono text-muted-foreground mb-0.5">
+              {stats.archived.length} strategi{stats.archived.length === 1 ? "a" : "e"}
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
