@@ -25,7 +25,7 @@ const TAB_STATUSES: Record<AppTab, StrategyStatus[]> = {
 const TAB_LABELS: Record<AppTab, string> = {
   "home": "Panoramica",
   "da-realizzare": "Da Realizzare",
-  "ready-to": "Ready to Present",
+  "ready-to": "Pronte per la Presentazione",
   "in-approvazione": "In Revisione dal Cliente",
   "confermata": "Confermata",
 };
@@ -230,7 +230,7 @@ const Index = () => {
                     ? `${tabFiltered.filter(s => s.stato_strategia === "Va bene !").length} confermate`
                     : activeTab === "da-realizzare"
                     ? `${tabFiltered.filter(s => s.stato_strategia !== "In pausa").length} attive · ${tabFiltered.filter(s => s.stato_strategia === "In pausa").length} in pausa · €${tabFiltered.filter(s => s.stato_strategia !== "In pausa").reduce((sum, s) => sum + s.importo_strategia, 0).toLocaleString("it-IT")} potenziale`
-                    : `${tabFiltered.length} strateg${tabFiltered.length === 1 ? "ia" : "ie"}`}
+                    : `${tabFiltered.length} strateg${tabFiltered.length === 1 ? "ia" : "ie"} · €${tabFiltered.reduce((sum, s) => sum + s.importo_strategia, 0).toLocaleString("it-IT")} potenziale`}
                 </p>
               </div>
               <Button size="sm" className="gap-1.5" onClick={handleCreate}>
