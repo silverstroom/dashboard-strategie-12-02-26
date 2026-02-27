@@ -125,16 +125,12 @@ const HomeOverview = ({ strategies, onNewStrategy, onTabChange }: HomeOverviewPr
         </div>
         <div className="flex items-center gap-3 text-xs text-status-da-realizzare/80 flex-wrap">
           <span className="font-semibold">
-            {stats.daFare.filter((s) => s.stato_strategia === "Da realizzare").length} da iniziare
+            {stats.daFare.filter((s) => s.stato_strategia === "Da realizzare").length} da iniziare · {formatImportoFull(stats.daFare.reduce((s, v) => s + v.importo_strategia, 0))} potenziale
           </span>
           <span className="opacity-40">·</span>
           <span className="inline-flex items-center gap-1 font-bold text-urgent-foreground">
             <AlertTriangle className="w-3 h-3" />
             {stats.daFare.filter((s) => s.stato_strategia === "In attesa/corretta").length} correzione urgente
-          </span>
-          <span className="opacity-40">·</span>
-          <span className="font-semibold">
-            {formatImportoFull(stats.daFare.reduce((s, v) => s + v.importo_strategia, 0))}
           </span>
         </div>
       </button>
