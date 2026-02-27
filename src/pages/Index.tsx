@@ -229,7 +229,7 @@ const Index = () => {
                   {activeTab === "confermata"
                     ? `${tabFiltered.filter(s => s.stato_strategia === "Va bene !").length} confermate`
                     : activeTab === "da-realizzare"
-                    ? `${tabFiltered.filter(s => s.stato_strategia !== "In pausa").length} attive · ${tabFiltered.filter(s => s.stato_strategia === "In pausa").length} in pausa`
+                    ? `${tabFiltered.filter(s => s.stato_strategia !== "In pausa").length} attive · ${tabFiltered.filter(s => s.stato_strategia === "In pausa").length} in pausa · €${tabFiltered.filter(s => s.stato_strategia !== "In pausa").reduce((sum, s) => sum + s.importo_strategia, 0).toLocaleString("it-IT")} potenziale`
                     : `${tabFiltered.length} strateg${tabFiltered.length === 1 ? "ia" : "ie"}`}
                 </p>
               </div>
