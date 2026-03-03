@@ -20,6 +20,7 @@ export interface Strategy {
   data_conferma: string | null;
   agente: string;
   nota_custom?: string; // es. "3% della commissione"
+  note?: string;
 }
 
 export function getImporto(tipo: StrategyType, stato: StrategyStatus): number {
