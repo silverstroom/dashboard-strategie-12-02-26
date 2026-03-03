@@ -165,7 +165,7 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
                         <tr
                           key={strategy.id}
                           className={`border-b cursor-pointer hover:bg-muted/30 transition-colors group ${
-                            isUrgent ? "bg-urgent-bg" : isPaused ? "bg-muted/40" : custom ? "bg-custom-bg" : index % 2 === 1 ? "bg-muted/20" : ""
+                            isUrgent ? "bg-urgent-bg" : isPaused ? "bg-muted/40" : custom ? "bg-custom-bg" : strategy.tipo_strategia === "Social" ? (index % 2 === 1 ? "bg-social-light/60" : "bg-social-light/30") : strategy.tipo_strategia === "Sito" ? (index % 2 === 1 ? "bg-sito-light/60" : "bg-sito-light/30") : index % 2 === 1 ? "bg-muted/20" : ""
                           }`}
                           onClick={() => onEdit(strategy)}
                         >
@@ -254,7 +254,7 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
                   <div
                     key={strategy.id}
                     className={`rounded-xl shadow-sm border cursor-pointer active:scale-[0.98] transition-all animate-fade-in overflow-hidden ${
-                      isUrgent ? "bg-urgent-bg border-urgent-border" : isPaused ? "bg-muted/50 border-border opacity-75" : custom ? "bg-custom-bg border-custom-border" : "bg-card"
+                      isUrgent ? "bg-urgent-bg border-urgent-border" : isPaused ? "bg-muted/50 border-border opacity-75" : custom ? "bg-custom-bg border-custom-border" : strategy.tipo_strategia === "Social" ? "bg-social-light/50 border-social/20" : strategy.tipo_strategia === "Sito" ? "bg-sito-light/50 border-sito/20" : "bg-card"
                     }`}
                     style={{ animationDelay: `${index * 0.04}s` }}
                     onClick={() => onEdit(strategy)}
