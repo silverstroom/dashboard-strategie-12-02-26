@@ -32,7 +32,7 @@ const TAB_LABELS: Record<AppTab, string> = {
 
 const Index = () => {
   const [strategies, setStrategies] = useState<Strategy[]>([]);
-  const [activeTab, setActiveTab] = useState<AppTab>("home");
+  const [activeTab, setActiveTab] = useState<AppTab>("da-realizzare");
   const [activeAgent, setActiveAgent] = useState<string>("Tutti");
   const [editingStrategy, setEditingStrategy] = useState<Strategy | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Strategy, StrategyStatus, StrategyType, getImporto } from "@/data/strategies";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,6 +43,56 @@ interface StrategyModalProps {
 const formatDateDisplay = (dateStr: string) => {
   const d = new Date(dateStr);
   return d.toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit", year: "numeric" });
+};
+
+// Autocomplete for agente field
+const AgentAutocomplete = ({ value, onChange, strategies }: { value: string; onChange: (v: string) => void; strategies: Strategy[] }) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  const agents = useMemo(() => {
+    const set = new Set(strategies.map((s) => s.agente).filter(Boolean));
+    return Array.from(set).sort();
+  }, [strategies]);
+
+  const filtered = agents.filter((a) => a.toLowerCase().includes(value.toLowerCase()));
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  return (
+    <div className="space-y-1.5 relative" ref={ref}>
+      <Label htmlFor="agente" className="text-xs">Agente</Label>
+      <Input
+        id="agente"
+        value={value}
+        onChange={(e) => { onChange(e.target.value); setOpen(true); }}
+        onFocus={() => setOpen(true)}
+        placeholder="Nome agente"
+        className="h-9"
+        autoComplete="off"
+      />
+      {open && filtered.length > 0 && value.length > 0 && (
+        <div className="absolute z-50 top-full mt-1 left-0 right-0 bg-popover border border-border rounded-lg shadow-lg max-h-32 overflow-y-auto">
+          {filtered.map((a) => (
+            <button
+              key={a}
+              type="button"
+              className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors first:rounded-t-lg last:rounded-b-lg"
+              onClick={() => { onChange(a); setOpen(false); }}
+            >
+              {a}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 };
 
 const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strategies }: StrategyModalProps) => {
@@ -155,10 +205,11 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
                 <Input id="nome" value={nome} onChange={(e) => setNome(e.target.value)} className="h-9" />
               </div>
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="agente" className="text-xs">Agente</Label>
-              <Input id="agente" value={agente} onChange={(e) => setAgente(e.target.value)} placeholder="Nome agente" className="h-9" />
-            </div>
+            <AgentAutocomplete
+              value={agente}
+              onChange={setAgente}
+              strategies={strategies}
+            />
           </div>
 
           <div className="border-t border-border" />
