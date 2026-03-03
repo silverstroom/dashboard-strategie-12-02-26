@@ -103,6 +103,7 @@ const Index = () => {
           data_conferma: s.data_conferma,
           agente: (s as any).agente || "",
           nota_custom: (s as any).nota_custom || undefined,
+          note: (s as any).note || undefined,
         }))
       );
     }
@@ -130,6 +131,7 @@ const Index = () => {
       data_conferma: strategy.data_conferma,
       agente: strategy.agente,
       nota_custom: strategy.nota_custom || null,
+      note: strategy.note || null,
     };
 
     const isExisting = strategies.some((s) => s.id === strategy.id);
