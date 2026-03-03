@@ -1,5 +1,5 @@
 import { Strategy, StrategyStatus } from "@/data/strategies";
-import { Plus, Copy, AlertTriangle, PauseCircle, Star, Archive, Check } from "lucide-react";
+import { Plus, Copy, AlertTriangle, PauseCircle, Star, Archive, Check, Globe, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface StrategyTableProps {
@@ -63,8 +63,14 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
 
   const getTypeBadge = (s: Strategy) => {
     if (s.tipo_strategia === "Custom") return "bg-custom-bg text-custom-foreground border border-custom-border";
-    if (s.tipo_strategia === "Social") return "bg-social-light text-social";
-    return "bg-sito-light text-sito";
+    if (s.tipo_strategia === "Social") return "bg-social-light text-social border border-social/20";
+    return "bg-sito-light text-sito border border-sito/20";
+  };
+
+  const TypeIcon = ({ tipo }: { tipo: string }) => {
+    if (tipo === "Social") return <Share2 className="w-3 h-3" />;
+    if (tipo === "Sito") return <Globe className="w-3 h-3" />;
+    return <Star className="w-3 h-3" />;
   };
 
   const getStripColor = (s: Strategy) => {
@@ -197,8 +203,9 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
                                 </span>
                               )}
                               <span className={`font-medium break-words ${isPaused ? "text-muted-foreground" : ""}`}>{strategy.nome_cliente}</span>
-                              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${getTypeBadge(strategy)} ${isPaused ? "opacity-50" : ""}`}>
-                                {strategy.tipo_strategia === "Custom" ? "⭐ Custom" : strategy.tipo_strategia}
+                              <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded ${getTypeBadge(strategy)} ${isPaused ? "opacity-50" : ""}`}>
+                                <TypeIcon tipo={strategy.tipo_strategia} />
+                                {strategy.tipo_strategia === "Custom" ? "Custom" : strategy.tipo_strategia}
                               </span>
                             </div>
                           </td>
@@ -293,8 +300,9 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
                           </button>
                         </div>
                         <div className="flex items-center gap-1">
-                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${getTypeBadge(strategy)} ${isPaused ? "opacity-50" : ""}`}>
-                            {strategy.tipo_strategia === "Custom" ? "⭐ Custom" : strategy.tipo_strategia}
+                          <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded ${getTypeBadge(strategy)} ${isPaused ? "opacity-50" : ""}`}>
+                            <TypeIcon tipo={strategy.tipo_strategia} />
+                            {strategy.tipo_strategia === "Custom" ? "Custom" : strategy.tipo_strategia}
                           </span>
                           {onQuickAction && <QuickActions strategy={strategy} />}
                         </div>
