@@ -2,115 +2,114 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=Inconsolata:wght@400;500;600;700&family=Lora:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=SF+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 96%;
-    --foreground: 0 0% 9%;
+    --background: 220 14% 96%;
+    --foreground: 220 15% 12%;
 
-    --card: 0 0% 98%;
-    --card-foreground: 0 0% 9%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 12%;
 
-    --popover: 0 0% 89%;
-    --popover-foreground: 0 0% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 12%;
 
-    --primary: 161 93% 30%;
-    --primary-foreground: 151 80% 95%;
+    --primary: 211 100% 50%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 32%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 220 9% 46%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 0 0% 63%;
-    --muted-foreground: 0 0% 9%;
+    --muted: 220 14% 92%;
+    --muted-foreground: 220 9% 46%;
 
-    --accent: 166 76% 96%;
-    --accent-foreground: 173 80% 40%;
+    --accent: 211 100% 96%;
+    --accent-foreground: 211 100% 42%;
 
-    --destructive: 0 72% 50%;
-    --destructive-foreground: 0 85% 97%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 83%;
-    --input: 0 0% 83%;
-    --ring: 161 93% 30%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 211 100% 50%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    --social: 161 70% 38%;
-    --social-light: 161 70% 93%;
+    --social: 152 69% 40%;
+    --social-light: 152 60% 95%;
     --social-foreground: 0 0% 100%;
 
-    --sito: 270 60% 55%;
-    --sito-light: 270 60% 93%;
+    --sito: 262 52% 56%;
+    --sito-light: 262 52% 96%;
     --sito-foreground: 0 0% 100%;
 
-    --status-pausa: 0 72% 50%;
-    --status-pausa-bg: 0 72% 95%;
-    --status-da-realizzare: 280 68% 50%;
-    --status-da-realizzare-bg: 280 68% 95%;
-    --status-attesa: 161 50% 40%;
-    --status-attesa-bg: 161 50% 92%;
-    --status-pronta: 330 81% 50%;
-    --status-pronta-bg: 330 81% 95%;
+    --status-pausa: 0 0% 55%;
+    --status-pausa-bg: 0 0% 95%;
+    --status-da-realizzare: 262 60% 55%;
+    --status-da-realizzare-bg: 262 60% 96%;
+    --status-attesa: 211 80% 50%;
+    --status-attesa-bg: 211 80% 96%;
+    --status-pronta: 340 75% 55%;
+    --status-pronta-bg: 340 75% 96%;
     --status-presentata: 199 89% 48%;
-    --status-presentata-bg: 199 89% 95%;
-    --status-ok: 142 71% 45%;
-    --status-ok-bg: 142 71% 95%;
+    --status-presentata-bg: 199 89% 96%;
+    --status-ok: 152 69% 40%;
+    --status-ok-bg: 152 60% 95%;
 
-    --urgent: 25 95% 50%;
-    --urgent-bg: 25 95% 95%;
-    --urgent-border: 25 95% 78%;
+    --urgent: 25 95% 53%;
+    --urgent-bg: 25 100% 96%;
+    --urgent-border: 25 90% 82%;
     --urgent-foreground: 25 95% 30%;
 
     --custom: 38 92% 50%;
-    --custom-light: 38 92% 93%;
-    --custom-bg: 38 92% 95%;
-    --custom-border: 38 92% 70%;
-    --custom-foreground: 38 92% 25%;
+    --custom-light: 38 92% 96%;
+    --custom-bg: 38 92% 97%;
+    --custom-border: 38 80% 78%;
+    --custom-foreground: 38 75% 28%;
 
-    --chart-earned: 161 93% 30%;
-    --chart-potential: 0 0% 63%;
-    --chart-social: 161 70% 38%;
-    --chart-sito: 199 70% 48%;
+    --chart-earned: 152 69% 40%;
+    --chart-potential: 220 9% 70%;
+    --chart-social: 152 69% 40%;
+    --chart-sito: 262 52% 56%;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 0 0% 9%;
-    --sidebar-primary: 161 93% 30%;
-    --sidebar-primary-foreground: 151 80% 95%;
-    --sidebar-accent: 0 0% 32%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 0 0% 83%;
-    --sidebar-ring: 161 93% 30%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 15% 12%;
+    --sidebar-primary: 211 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 9% 46%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 211 100% 50%;
+
+    /* Liquid glass tokens */
+    --glass-bg: 0 0% 100% / 0.72;
+    --glass-border: 0 0% 100% / 0.5;
+    --glass-blur: 24px;
+    --glass-shadow: 0 2px 32px 0 rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
+    --glass-shadow-lg: 0 8px 48px 0 rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
   }
 
   .dark {
-    --background: 0 0% 9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 14%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 25%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 158 64% 51%;
-    --primary-foreground: 165 91% 9%;
-    --secondary: 0 0% 45%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 45%;
-    --muted-foreground: 0 0% 98%;
-    --accent: 178 84% 10%;
-    --accent-foreground: 172 66% 50%;
+    --background: 220 15% 8%;
+    --foreground: 220 14% 96%;
+    --card: 220 15% 12%;
+    --card-foreground: 220 14% 96%;
+    --popover: 220 15% 14%;
+    --popover-foreground: 220 14% 96%;
+    --primary: 211 100% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 9% 55%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 220 15% 18%;
+    --muted-foreground: 220 9% 60%;
+    --accent: 211 50% 15%;
+    --accent-foreground: 211 100% 65%;
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 85% 97%;
-    --border: 0 0% 32%;
-    --input: 0 0% 32%;
-    --ring: 158 64% 51%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 158 64% 51%;
-    --sidebar-primary-foreground: 165 91% 9%;
-    --sidebar-accent: 172 66% 50%;
-    --sidebar-accent-foreground: 178 84% 10%;
-    --sidebar-border: 0 0% 32%;
-    --sidebar-ring: 158 64% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 20%;
+    --input: 220 13% 20%;
+    --ring: 211 100% 55%;
 
     --urgent: 25 95% 55%;
     --urgent-bg: 25 60% 15%;
@@ -122,6 +121,20 @@
     --custom-bg: 38 50% 15%;
     --custom-border: 38 70% 35%;
     --custom-foreground: 38 92% 80%;
+
+    --glass-bg: 220 15% 12% / 0.72;
+    --glass-border: 220 15% 20% / 0.5;
+    --glass-shadow: 0 2px 32px 0 rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.04);
+    --glass-shadow-lg: 0 8px 48px 0 rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.04);
+
+    --sidebar-background: 220 15% 10%;
+    --sidebar-foreground: 220 14% 96%;
+    --sidebar-primary: 211 100% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 211 50% 15%;
+    --sidebar-accent-foreground: 211 100% 65%;
+    --sidebar-border: 220 13% 20%;
+    --sidebar-ring: 211 100% 55%;
   }
 }
 
@@ -132,7 +145,9 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: "Work Sans", ui-sans-serif, system-ui, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Helvetica", ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
@@ -143,5 +158,44 @@
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Apple Liquid Glass utilities */
+  .glass {
+    background: hsla(var(--glass-bg));
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    box-shadow: var(--glass-shadow);
+    border: 1px solid hsla(var(--glass-border));
+  }
+
+  .glass-strong {
+    background: hsla(var(--glass-bg));
+    backdrop-filter: blur(40px) saturate(1.8);
+    -webkit-backdrop-filter: blur(40px) saturate(1.8);
+    box-shadow: var(--glass-shadow-lg);
+    border: 1px solid hsla(var(--glass-border));
+  }
+
+  .liquid-card {
+    @apply rounded-2xl;
+    background: hsl(var(--card));
+    box-shadow: var(--glass-shadow);
+    border: 1px solid hsl(var(--border));
+    transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .liquid-card:hover {
+    box-shadow: var(--glass-shadow-lg);
+  }
+
+  .liquid-pill {
+    @apply rounded-full;
+    transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .liquid-press:active {
+    transform: scale(0.97);
   }
 }
