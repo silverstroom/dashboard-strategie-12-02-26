@@ -237,6 +237,43 @@ const Index = () => {
 
             {activeTab === "confermata" ? (
               <>
+                <div className="flex gap-2 animate-fade-in">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-1.5 rounded-xl h-9 px-4 liquid-press"
+                    onClick={() => {
+                      const sitoClients = tabFiltered
+                        .filter(s => s.stato_strategia === "Va bene !" && s.tipo_strategia === "Sito")
+                        .map(s => `Cliente: ${s.codice_cliente} - ${s.nome_cliente}`)
+                        .join("\n");
+                      if (!sitoClients) { toast.info("Nessun cliente Sito confermato"); return; }
+                      navigator.clipboard.writeText(sitoClients);
+                      toast.success("Lista Sito copiata!");
+                    }}
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                    Copia Sito
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-1.5 rounded-xl h-9 px-4 liquid-press"
+                    onClick={() => {
+                      const socialClients = tabFiltered
+                        .filter(s => s.stato_strategia === "Va bene !" && s.tipo_strategia === "Social")
+                        .map(s => `Cliente: ${s.codice_cliente} - ${s.nome_cliente}`)
+                        .join("\n");
+                      if (!socialClients) { toast.info("Nessun cliente Social confermato"); return; }
+                      navigator.clipboard.writeText(socialClients);
+                      toast.success("Lista Social copiata!");
+                    }}
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                    Copia Social
+                  </Button>
+                </div>
+
                 <StrategyTable
                   strategies={tabFiltered.filter(s => s.stato_strategia === "Va bene !")}
                   activeFilter="Tutte"
