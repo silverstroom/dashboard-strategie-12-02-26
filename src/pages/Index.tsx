@@ -13,7 +13,6 @@ import { toast } from "sonner";
 import { Plus, Archive, ChevronDown, ChevronUp, Pause } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-// Which statuses belong to each tab
 const TAB_STATUSES: Record<AppTab, StrategyStatus[]> = {
   "home": [],
   "da-realizzare": ["Da realizzare", "In pausa"],
@@ -41,7 +40,6 @@ const Index = () => {
   const [showInPausa, setShowInPausa] = useState(false);
   const navigate = useNavigate();
 
-  // Check auth and load data
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -63,7 +61,6 @@ const Index = () => {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [navigate]);
 
-  // Auth state change listener
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_OUT") navigate("/login");
@@ -71,7 +68,6 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  // Realtime subscription
   useEffect(() => {
     const channel = supabase
       .channel("strategies-changes")
@@ -184,14 +180,12 @@ const Index = () => {
     fetchStrategies();
   }, []);
 
-  // Filter by agent
   const agentFiltered = useMemo(() => {
     if (activeAgent === "Tutti") return strategies;
     if (activeAgent === "Senza agente") return strategies.filter((s) => !s.agente);
     return strategies.filter((s) => s.agente === activeAgent);
   }, [strategies, activeAgent]);
 
-  // Filter by tab statuses
   const tabFiltered = useMemo(() => {
     if (activeTab === "home") return agentFiltered;
     const statuses = TAB_STATUSES[activeTab];
@@ -201,7 +195,10 @@ const Index = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Caricamento...</p>
+        <div className="flex flex-col items-center gap-3 animate-fade-in">
+          <div className="w-8 h-8 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+          <p className="text-sm text-muted-foreground font-medium">Caricamento...</p>
+        </div>
       </div>
     );
   }
@@ -210,23 +207,20 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <DashboardHeader />
 
-      <main className="container mx-auto px-4 py-5 space-y-5 max-w-6xl pb-24">
-        {/* Agent filter always visible */}
+      <main className="container mx-auto px-4 py-5 space-y-5 max-w-6xl pb-28">
         <AgentFilter strategies={strategies} activeAgent={activeAgent} onChange={setActiveAgent} />
 
         {activeTab === "home" ? (
-          /* ---- HOME: panoramica con grafici ---- */
           <HomeOverview
             strategies={agentFiltered}
             onNewStrategy={handleCreate}
             onTabChange={(tab) => setActiveTab(tab as AppTab)}
           />
         ) : (
-          /* ---- ALTRE TAB: tabella filtrata ---- */
           <>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between animate-fade-in">
               <div>
-                <h2 className="text-xl font-bold text-foreground">{TAB_LABELS[activeTab]}</h2>
+                <h2 className="text-xl font-semibold text-foreground tracking-tight">{TAB_LABELS[activeTab]}</h2>
                 <p className="text-sm text-muted-foreground mt-0.5">
                   {activeTab === "confermata"
                     ? `${tabFiltered.filter(s => s.stato_strategia === "Va bene !").length} confermate · €${tabFiltered.filter(s => s.stato_strategia === "Va bene !").reduce((sum, s) => sum + s.importo_strategia, 0).toLocaleString("it-IT")} da fatturare`
@@ -235,7 +229,7 @@ const Index = () => {
                     : `${tabFiltered.length} strateg${tabFiltered.length === 1 ? "ia" : "ie"} · €${tabFiltered.reduce((sum, s) => sum + s.importo_strategia, 0).toLocaleString("it-IT")} potenziale`}
                 </p>
               </div>
-              <Button size="sm" className="gap-1.5" onClick={handleCreate}>
+              <Button size="sm" className="gap-1.5 rounded-xl h-9 px-4 shadow-[0_2px_12px_rgba(0,122,255,0.25)] liquid-press" onClick={handleCreate}>
                 <Plus className="w-4 h-4" />
                 Nuova
               </Button>
@@ -243,7 +237,6 @@ const Index = () => {
 
             {activeTab === "confermata" ? (
               <>
-                {/* Active confirmed strategies */}
                 <StrategyTable
                   strategies={tabFiltered.filter(s => s.stato_strategia === "Va bene !")}
                   activeFilter="Tutte"
@@ -254,14 +247,13 @@ const Index = () => {
                   hideHeader
                 />
 
-                {/* Archivio section */}
                 {(() => {
                   const archived = tabFiltered.filter(s => s.stato_strategia === "Archiviata");
                   return (
                     <div className="mt-6">
                       <button
                         onClick={() => setShowArchivio(!showArchivio)}
-                        className="flex items-center gap-2 w-full px-4 py-3 rounded-xl bg-muted/50 border border-border hover:bg-muted transition-colors"
+                        className="flex items-center gap-2 w-full px-5 py-3.5 rounded-2xl bg-muted/40 border border-border/60 hover:bg-muted/60 transition-all duration-300 liquid-press"
                       >
                         <Archive className="w-4 h-4 text-muted-foreground" />
                         <span className="text-sm font-semibold text-muted-foreground">
@@ -272,7 +264,7 @@ const Index = () => {
                           : <ChevronDown className="w-4 h-4 text-muted-foreground ml-auto" />}
                       </button>
                       {showArchivio && archived.length > 0 && (
-                        <div className="mt-3 opacity-75">
+                        <div className="mt-3 opacity-75 animate-fade-in">
                           <StrategyTable
                             strategies={archived}
                             activeFilter="Tutte"
@@ -294,7 +286,6 @@ const Index = () => {
               </>
             ) : activeTab === "da-realizzare" ? (
               <>
-                {/* Strategie attive (escluse In pausa) */}
                 <StrategyTable
                   strategies={tabFiltered.filter(s => s.stato_strategia !== "In pausa")}
                   activeFilter="Tutte"
@@ -305,14 +296,13 @@ const Index = () => {
                   hideHeader
                 />
 
-                {/* Sezione In Pausa */}
                 {(() => {
                   const paused = tabFiltered.filter(s => s.stato_strategia === "In pausa");
                   return (
                     <div className="mt-6">
                       <button
                         onClick={() => setShowInPausa(!showInPausa)}
-                        className="flex items-center gap-2 w-full px-4 py-3 rounded-xl bg-muted/50 border border-border hover:bg-muted transition-colors"
+                        className="flex items-center gap-2 w-full px-5 py-3.5 rounded-2xl bg-muted/40 border border-border/60 hover:bg-muted/60 transition-all duration-300 liquid-press"
                       >
                         <Pause className="w-4 h-4 text-muted-foreground" />
                         <span className="text-sm font-semibold text-muted-foreground">
@@ -323,7 +313,7 @@ const Index = () => {
                           : <ChevronDown className="w-4 h-4 text-muted-foreground ml-auto" />}
                       </button>
                       {showInPausa && paused.length > 0 && (
-                        <div className="mt-3 opacity-75">
+                        <div className="mt-3 opacity-75 animate-fade-in">
                           <StrategyTable
                             strategies={paused}
                             activeFilter="Tutte"

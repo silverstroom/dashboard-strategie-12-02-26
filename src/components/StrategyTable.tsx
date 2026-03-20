@@ -92,7 +92,6 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
     return <span>{formatImporto(strategy.importo_strategia)}</span>;
   };
 
-  // Determine which quick actions to show for a strategy
   const canConfirm = (s: Strategy) => s.stato_strategia !== "Va bene !" && s.stato_strategia !== "Archiviata";
   const canArchive = (s: Strategy) => s.stato_strategia === "Va bene !";
 
@@ -102,7 +101,7 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
       <div className="flex items-center gap-1">
         {canConfirm(strategy) && (
           <button
-            className="p-1.5 rounded-lg hover:bg-status-ok-bg text-muted-foreground hover:text-status-ok transition-colors"
+            className="p-1.5 rounded-xl hover:bg-status-ok-bg text-muted-foreground hover:text-status-ok transition-all duration-200"
             title="Conferma (Va bene !)"
             onClick={(e) => { e.stopPropagation(); onQuickAction(strategy, "Va bene !"); }}
           >
@@ -111,7 +110,7 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
         )}
         {canArchive(strategy) && (
           <button
-            className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1.5 rounded-xl hover:bg-muted text-muted-foreground hover:text-foreground transition-all duration-200"
             title="Archivia"
             onClick={(e) => { e.stopPropagation(); onQuickAction(strategy, "Archiviata"); }}
           >
@@ -127,7 +126,7 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
       {!hideHeader && (
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground">Strategie ({filtered.length})</h2>
-          <Button size="sm" className="gap-1.5" onClick={onCreate}>
+          <Button size="sm" className="gap-1.5 rounded-xl" onClick={onCreate}>
             <Plus className="w-4 h-4" />
             Nuova Strategia
           </Button>
@@ -137,21 +136,21 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
       {/* Desktop Table */}
       <div className="hidden md:block space-y-6 mt-4">
         {groups.map((group) => (
-          <div key={group.agente}>
+          <div key={group.agente} className="animate-fade-in">
             <h3 className="text-sm font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
               {group.agente} ({group.items.length})
             </h3>
-            <div className="rounded-xl border bg-card overflow-hidden shadow-sm">
+            <div className="liquid-card overflow-hidden">
               <div className="relative w-full overflow-auto">
                 <table className="w-full caption-bottom text-sm">
                   <thead>
-                    <tr className="border-b bg-muted/50">
-                      <th className="h-12 px-4 text-left align-middle text-muted-foreground w-[120px] font-semibold">Codice</th>
-                      <th className="h-12 px-4 text-left align-middle text-muted-foreground font-semibold">Nome Cliente</th>
-                      <th className="h-12 px-4 text-left align-middle text-muted-foreground font-semibold">Stato</th>
-                      <th className="h-12 px-4 text-right align-middle text-muted-foreground font-semibold">Importo</th>
-                      <th className="h-12 px-4 text-right align-middle text-muted-foreground font-semibold">Aggiunta il</th>
-                      {onQuickAction && <th className="h-12 px-2 align-middle text-muted-foreground font-semibold w-[80px]"></th>}
+                    <tr className="border-b bg-muted/30">
+                      <th className="h-11 px-4 text-left align-middle text-muted-foreground w-[120px] font-medium text-xs">Codice</th>
+                      <th className="h-11 px-4 text-left align-middle text-muted-foreground font-medium text-xs">Nome Cliente</th>
+                      <th className="h-11 px-4 text-left align-middle text-muted-foreground font-medium text-xs">Stato</th>
+                      <th className="h-11 px-4 text-right align-middle text-muted-foreground font-medium text-xs">Importo</th>
+                      <th className="h-11 px-4 text-right align-middle text-muted-foreground font-medium text-xs">Aggiunta il</th>
+                      {onQuickAction && <th className="h-11 px-2 align-middle text-muted-foreground font-medium w-[80px]"></th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -164,17 +163,17 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
                       return (
                         <tr
                           key={strategy.id}
-                          className={`border-b cursor-pointer hover:bg-muted/30 transition-colors group ${
-                            isUrgent ? "bg-urgent-bg" : isPaused ? "bg-muted/40" : custom ? "bg-custom-bg" : strategy.tipo_strategia === "Social" ? (index % 2 === 1 ? "bg-social-light/60" : "bg-social-light/30") : strategy.tipo_strategia === "Sito" ? (index % 2 === 1 ? "bg-sito-light/60" : "bg-sito-light/30") : index % 2 === 1 ? "bg-muted/20" : ""
+                          className={`border-b border-border/50 cursor-pointer hover:bg-muted/40 transition-all duration-200 group ${
+                            isUrgent ? "bg-urgent-bg" : isPaused ? "bg-muted/30" : custom ? "bg-custom-bg" : strategy.tipo_strategia === "Social" ? (index % 2 === 1 ? "bg-social-light/50" : "bg-social-light/25") : strategy.tipo_strategia === "Sito" ? (index % 2 === 1 ? "bg-sito-light/50" : "bg-sito-light/25") : index % 2 === 1 ? "bg-muted/15" : ""
                           }`}
                           onClick={() => onEdit(strategy)}
                         >
                           <td className="p-4 align-middle relative font-mono text-sm">
-                            <div className={`absolute left-0 top-0 bottom-0 w-1 ${getStripColor(strategy)}`} />
+                            <div className={`absolute left-0 top-0 bottom-0 w-1 rounded-r-full ${getStripColor(strategy)}`} />
                             <div className="flex items-center gap-1.5 pl-1">
                               <span className={isPaused ? "text-muted-foreground" : ""}>{strategy.codice_cliente}</span>
                               <button
-                                className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-muted"
+                                className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-lg hover:bg-muted"
                                 title="Copia cliente"
                                 onClick={(e) => { e.stopPropagation(); onCopy(strategy); }}
                               >
@@ -203,14 +202,14 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
                                 </span>
                               )}
                               <span className={`font-medium break-words ${isPaused ? "text-muted-foreground" : ""}`}>{strategy.nome_cliente}</span>
-                              <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded ${getTypeBadge(strategy)} ${isPaused ? "opacity-50" : ""}`}>
+                              <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${getTypeBadge(strategy)} ${isPaused ? "opacity-50" : ""}`}>
                                 <TypeIcon tipo={strategy.tipo_strategia} />
                                 {strategy.tipo_strategia === "Custom" ? "Custom" : strategy.tipo_strategia}
                               </span>
                             </div>
                           </td>
                           <td className="p-4 align-middle">
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${badge.bg} ${badge.text}`}>
+                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${badge.bg} ${badge.text}`}>
                               {strategy.stato_strategia}
                             </span>
                           </td>
@@ -239,8 +238,8 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
       {/* Mobile Cards */}
       <div className="md:hidden space-y-6 mt-4">
         {groups.map((group) => (
-          <div key={group.agente}>
-            <h3 className="text-sm font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
+          <div key={group.agente} className="animate-fade-in">
+            <h3 className="text-sm font-semibold text-muted-foreground mb-2.5 uppercase tracking-wide">
               {group.agente} ({group.items.length})
             </h3>
             <div className="flex flex-col gap-3">
@@ -253,8 +252,8 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
                 return (
                   <div
                     key={strategy.id}
-                    className={`rounded-xl shadow-sm border cursor-pointer active:scale-[0.98] transition-all animate-fade-in overflow-hidden ${
-                      isUrgent ? "bg-urgent-bg border-urgent-border" : isPaused ? "bg-muted/50 border-border opacity-75" : custom ? "bg-custom-bg border-custom-border" : strategy.tipo_strategia === "Social" ? "bg-social-light/50 border-social/20" : strategy.tipo_strategia === "Sito" ? "bg-sito-light/50 border-sito/20" : "bg-card"
+                    className={`liquid-card cursor-pointer liquid-press overflow-hidden animate-fade-in ${
+                      isUrgent ? "!bg-urgent-bg !border-urgent-border" : isPaused ? "!bg-muted/40 !border-border opacity-75" : custom ? "!bg-custom-bg !border-custom-border" : strategy.tipo_strategia === "Social" ? "!bg-social-light/40 !border-social/15" : strategy.tipo_strategia === "Sito" ? "!bg-sito-light/40 !border-sito/15" : ""
                     }`}
                     style={{ animationDelay: `${index * 0.04}s` }}
                     onClick={() => onEdit(strategy)}
@@ -262,7 +261,7 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
                     <div className={`h-1 ${getStripColor(strategy)}`} />
                     <div className="p-4">
                       {custom && (
-                        <div className="flex items-center gap-1.5 mb-2.5 px-2.5 py-1.5 rounded-lg bg-custom-bg border border-custom-border w-fit">
+                        <div className="flex items-center gap-1.5 mb-2.5 px-2.5 py-1.5 rounded-xl bg-custom-bg border border-custom-border w-fit">
                           <Star className="w-3.5 h-3.5 text-custom" />
                           <span className="text-[11px] font-bold text-custom-foreground uppercase tracking-wide">
                             Custom — {strategy.nota_custom || "3% della commissione"}
@@ -270,7 +269,7 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
                         </div>
                       )}
                       {isUrgent && !custom && (
-                        <div className="flex items-center gap-1.5 mb-2.5 px-2.5 py-1.5 rounded-lg bg-urgent-bg border border-urgent-border w-fit">
+                        <div className="flex items-center gap-1.5 mb-2.5 px-2.5 py-1.5 rounded-xl bg-urgent-bg border border-urgent-border w-fit">
                           <AlertTriangle className="w-3.5 h-3.5 text-urgent-foreground" />
                           <span className="text-[11px] font-bold text-urgent-foreground uppercase tracking-wide">
                             Correzione urgente
@@ -278,7 +277,7 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
                         </div>
                       )}
                       {isPaused && (
-                        <div className="flex items-center gap-1.5 mb-2.5 px-2.5 py-1.5 rounded-lg bg-muted border border-border w-fit">
+                        <div className="flex items-center gap-1.5 mb-2.5 px-2.5 py-1.5 rounded-xl bg-muted border border-border w-fit">
                           <PauseCircle className="w-3.5 h-3.5 text-muted-foreground" />
                           <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wide">
                             In pausa — momentaneamente ferma
@@ -288,11 +287,11 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-start gap-1.5">
                           <div>
-                            <p className={`font-bold break-words ${isPaused ? "text-muted-foreground" : "text-foreground"}`}>{strategy.nome_cliente}</p>
+                            <p className={`font-semibold break-words ${isPaused ? "text-muted-foreground" : "text-foreground"}`}>{strategy.nome_cliente}</p>
                             <p className="text-xs text-muted-foreground font-mono">{strategy.codice_cliente}</p>
                           </div>
                           <button
-                            className="p-1 rounded hover:bg-muted shrink-0 mt-0.5"
+                            className="p-1 rounded-lg hover:bg-muted shrink-0 mt-0.5"
                             title="Copia cliente"
                             onClick={(e) => { e.stopPropagation(); onCopy(strategy); }}
                           >
@@ -300,7 +299,7 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
                           </button>
                         </div>
                         <div className="flex items-center gap-1">
-                          <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded ${getTypeBadge(strategy)} ${isPaused ? "opacity-50" : ""}`}>
+                          <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${getTypeBadge(strategy)} ${isPaused ? "opacity-50" : ""}`}>
                             <TypeIcon tipo={strategy.tipo_strategia} />
                             {strategy.tipo_strategia === "Custom" ? "Custom" : strategy.tipo_strategia}
                           </span>
@@ -309,7 +308,7 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${badge.bg} ${badge.text}`}>
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${badge.bg} ${badge.text}`}>
                             {strategy.stato_strategia}
                           </span>
                           <span className="text-xs text-muted-foreground">{formatDate(strategy.aggiunta_il)}</span>

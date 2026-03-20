@@ -18,15 +18,15 @@ const AgentFilter = ({ strategies, activeAgent, onChange }: AgentFilterProps) =>
   }, [strategies]);
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2.5">
       <Users className="w-4 h-4 text-muted-foreground shrink-0" />
       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
         <button
           onClick={() => onChange("Tutti")}
-          className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors shrink-0 ${
+          className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 shrink-0 liquid-press ${
             activeAgent === "Tutti"
-              ? "bg-primary text-primary-foreground shadow-sm"
-              : "bg-card text-foreground/70 border border-border hover:bg-muted/40"
+              ? "bg-primary text-primary-foreground shadow-[0_2px_12px_rgba(0,122,255,0.3)]"
+              : "bg-card text-muted-foreground border border-border hover:bg-muted/50 hover:text-foreground"
           }`}
         >
           Tutti
@@ -35,10 +35,10 @@ const AgentFilter = ({ strategies, activeAgent, onChange }: AgentFilterProps) =>
           <button
             key={agent}
             onClick={() => onChange(agent)}
-            className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors shrink-0 ${
+            className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 shrink-0 liquid-press ${
               activeAgent === agent
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "bg-card text-foreground/70 border border-border hover:bg-muted/40"
+                ? "bg-primary text-primary-foreground shadow-[0_2px_12px_rgba(0,122,255,0.3)]"
+                : "bg-card text-muted-foreground border border-border hover:bg-muted/50 hover:text-foreground"
             }`}
           >
             {agent}
@@ -47,10 +47,10 @@ const AgentFilter = ({ strategies, activeAgent, onChange }: AgentFilterProps) =>
         {strategies.some((s) => !s.agente) && (
           <button
             onClick={() => onChange("Senza agente")}
-            className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors shrink-0 ${
+            className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 shrink-0 liquid-press ${
               activeAgent === "Senza agente"
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "bg-card text-foreground/70 border border-border hover:bg-muted/40"
+                ? "bg-primary text-primary-foreground shadow-[0_2px_12px_rgba(0,122,255,0.3)]"
+                : "bg-card text-muted-foreground border border-border hover:bg-muted/50 hover:text-foreground"
             }`}
           >
             Senza agente
