@@ -10,7 +10,7 @@ import HomeOverview from "@/components/HomeOverview";
 import { Strategy, StrategyStatus, getImporto } from "@/data/strategies";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, Archive, ChevronDown, ChevronUp, Pause } from "lucide-react";
+import { Plus, Archive, ChevronDown, ChevronUp, Pause, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const TAB_STATUSES: Record<AppTab, StrategyStatus[]> = {
