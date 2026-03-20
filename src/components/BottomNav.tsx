@@ -18,9 +18,9 @@ const navItems: { id: AppTab; label: string; icon: React.FC<{ className?: string
 
 const BottomNav = ({ active, onChange, badge }: BottomNavProps) => {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50">
-      <div className="mx-3 mb-3 glass-strong rounded-2xl">
-        <div className="flex items-stretch h-16 max-w-2xl mx-auto px-1">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
+      <div className="pointer-events-auto mb-4 px-3 py-2 rounded-[20px] border border-white/30 bg-white/60 backdrop-blur-2xl shadow-[0_4px_30px_rgba(0,0,0,0.08),0_1px_3px_rgba(0,0,0,0.06)]">
+        <div className="flex items-center gap-1">
           {navItems.map(({ id, label, icon: Icon }) => {
             const isActive = active === id;
             const count = badge?.[id];
@@ -28,14 +28,14 @@ const BottomNav = ({ active, onChange, badge }: BottomNavProps) => {
               <button
                 key={id}
                 onClick={() => onChange(id)}
-                className={`flex-1 flex flex-col items-center justify-center gap-0.5 transition-all duration-300 relative rounded-xl mx-0.5 liquid-press ${
+                className={`flex flex-col items-center justify-center gap-0.5 px-3.5 py-1.5 transition-all duration-300 relative rounded-2xl liquid-press ${
                   isActive
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {isActive && (
-                  <span className="absolute inset-1 bg-primary/8 rounded-xl transition-all duration-300" />
+                  <span className="absolute inset-0.5 bg-primary/10 rounded-2xl transition-all duration-300" />
                 )}
                 <div className="relative z-10">
                   <Icon className={`w-5 h-5 transition-all duration-300 ${isActive ? "scale-110" : ""}`} />
