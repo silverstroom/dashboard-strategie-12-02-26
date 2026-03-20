@@ -45,7 +45,6 @@ const formatDateDisplay = (dateStr: string) => {
   return d.toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit", year: "numeric" });
 };
 
-// Autocomplete for agente field
 const AgentAutocomplete = ({ value, onChange, strategies }: { value: string; onChange: (v: string) => void; strategies: Strategy[] }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -67,23 +66,23 @@ const AgentAutocomplete = ({ value, onChange, strategies }: { value: string; onC
 
   return (
     <div className="space-y-1.5 relative" ref={ref}>
-      <Label htmlFor="agente" className="text-xs">Agente</Label>
+      <Label htmlFor="agente" className="text-xs font-medium text-muted-foreground">Agente</Label>
       <Input
         id="agente"
         value={value}
         onChange={(e) => { onChange(e.target.value); setOpen(true); }}
         onFocus={() => setOpen(true)}
         placeholder="Nome agente"
-        className="h-9"
+        className="h-10 rounded-xl bg-muted/30 border-border/60 focus:bg-card"
         autoComplete="off"
       />
       {open && filtered.length > 0 && value.length > 0 && (
-        <div className="absolute z-50 top-full mt-1 left-0 right-0 bg-popover border border-border rounded-lg shadow-lg max-h-32 overflow-y-auto">
+        <div className="absolute z-50 top-full mt-1 left-0 right-0 bg-card border border-border rounded-xl shadow-lg max-h-32 overflow-y-auto">
           {filtered.map((a) => (
             <button
               key={a}
               type="button"
-              className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors first:rounded-t-lg last:rounded-b-lg"
+              className="w-full text-left px-3 py-2.5 text-sm hover:bg-muted/50 transition-colors first:rounded-t-xl last:rounded-b-xl"
               onClick={() => { onChange(a); setOpen(false); }}
             >
               {a}
@@ -171,16 +170,15 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[520px] p-0 gap-0 overflow-hidden">
+      <DialogContent className="sm:max-w-[520px] p-0 gap-0 overflow-hidden rounded-3xl border-border/50 shadow-[0_24px_80px_rgba(0,0,0,0.12)]">
         <DialogHeader className="px-6 pt-6 pb-4">
-          <DialogTitle className="text-xl font-bold">
+          <DialogTitle className="text-xl font-semibold tracking-tight">
             {isEdit ? "Modifica Strategia" : "Nuova Strategia"}
           </DialogTitle>
         </DialogHeader>
 
-        {/* Custom banner */}
         {isCustom && (
-          <div className="mx-6 flex items-center gap-2 px-3 py-2.5 rounded-lg bg-custom-bg border border-custom-border">
+          <div className="mx-6 flex items-center gap-2 px-4 py-3 rounded-2xl bg-custom-bg border border-custom-border">
             <Star className="w-4 h-4 text-custom" />
             <span className="text-sm font-semibold text-custom-foreground">
               Strategia Custom — importo a percentuale
@@ -191,18 +189,18 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
         <div className="px-6 pb-4 space-y-5 max-h-[65vh] overflow-y-auto">
           {/* Sezione: Cliente */}
           <div className="space-y-3">
-            <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground uppercase tracking-wider pt-2">
+            <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider pt-2">
               <User className="w-3.5 h-3.5" />
               Cliente
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label htmlFor="codice" className="text-xs">Codice cliente</Label>
-                <Input id="codice" value={codice} onChange={(e) => setCodice(e.target.value)} className="font-mono h-9" />
+                <Label htmlFor="codice" className="text-xs font-medium text-muted-foreground">Codice cliente</Label>
+                <Input id="codice" value={codice} onChange={(e) => setCodice(e.target.value)} className="font-mono h-10 rounded-xl bg-muted/30 border-border/60 focus:bg-card" />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="nome" className="text-xs">Nome cliente</Label>
-                <Input id="nome" value={nome} onChange={(e) => setNome(e.target.value)} className="h-9" />
+                <Label htmlFor="nome" className="text-xs font-medium text-muted-foreground">Nome cliente</Label>
+                <Input id="nome" value={nome} onChange={(e) => setNome(e.target.value)} className="h-10 rounded-xl bg-muted/30 border-border/60 focus:bg-card" />
               </div>
             </div>
             <AgentAutocomplete
@@ -212,22 +210,22 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
             />
           </div>
 
-          <div className="border-t border-border" />
+          <div className="border-t border-border/40" />
 
           {/* Sezione: Strategia */}
           <div className="space-y-3">
-            <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               <Settings className="w-3.5 h-3.5" />
               Dettagli strategia
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-xs">Tipo strategia</Label>
+                <Label className="text-xs font-medium text-muted-foreground">Tipo strategia</Label>
                 <Select value={tipo} onValueChange={(v) => setTipo(v as StrategyType)}>
-                  <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-                  <SelectContent>
+                  <SelectTrigger className="h-10 rounded-xl bg-muted/30 border-border/60"><SelectValue /></SelectTrigger>
+                  <SelectContent className="rounded-xl">
                     {allTipi.map((t) => (
-                      <SelectItem key={t} value={t}>
+                      <SelectItem key={t} value={t} className="rounded-lg">
                         {t === "Custom" ? "⭐ Custom (percentuale)" : t}
                       </SelectItem>
                     ))}
@@ -235,28 +233,27 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs">Stato strategia</Label>
+                <Label className="text-xs font-medium text-muted-foreground">Stato strategia</Label>
                 <Select value={stato} onValueChange={(v) => handleStatoChange(v as StrategyStatus)}>
-                  <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-                  <SelectContent>
+                  <SelectTrigger className="h-10 rounded-xl bg-muted/30 border-border/60"><SelectValue /></SelectTrigger>
+                  <SelectContent className="rounded-xl">
                     {allStati.map((s) => (
-                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                      <SelectItem key={s} value={s} className="rounded-lg">{s}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
-            {/* Custom-specific: nota commissione */}
             {isCustom && (
               <div className="space-y-1.5">
-                <Label htmlFor="nota_custom" className="text-xs">Dettaglio commissione</Label>
+                <Label htmlFor="nota_custom" className="text-xs font-medium text-muted-foreground">Dettaglio commissione</Label>
                 <Input
                   id="nota_custom"
                   value={notaCustom}
                   onChange={(e) => setNotaCustom(e.target.value)}
                   placeholder="3% della commissione"
-                  className="border-custom-border focus-visible:ring-custom h-9"
+                  className="border-custom-border focus-visible:ring-custom h-10 rounded-xl bg-muted/30"
                 />
                 <p className="text-[11px] text-muted-foreground">
                   L'importo verrà definito in base alla commissione dell'agente
@@ -266,39 +263,39 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
 
             {/* Importo */}
             <div className="space-y-1.5">
-              <Label className="text-xs">Importo</Label>
+              <Label className="text-xs font-medium text-muted-foreground">Importo</Label>
               {isCustom ? (
-                <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-custom-bg border border-custom-border">
+                <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-custom-bg border border-custom-border">
                   <Star className="w-3.5 h-3.5 text-custom" />
                   <span className="text-sm font-mono font-semibold text-custom-foreground">
                     {notaCustom || "3% della commissione"}
                   </span>
                 </div>
               ) : (
-                <div className="flex items-center px-3 py-2 rounded-md bg-muted/40 border border-border font-mono text-sm font-semibold">
+                <div className="flex items-center px-4 py-2.5 rounded-xl bg-muted/30 border border-border/60 font-mono text-sm font-semibold">
                   €{importo.toLocaleString("it-IT")}
                 </div>
               )}
             </div>
           </div>
 
-          <div className="border-t border-border" />
+          <div className="border-t border-border/40" />
 
           {/* Sezione: Date */}
           <div className="space-y-3">
-            <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               <FileText className="w-3.5 h-3.5" />
               Date
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label htmlFor="data" className="text-xs">Aggiunta il</Label>
-                <Input id="data" type="date" value={aggiuntaIl} onChange={(e) => setAggiuntaIl(e.target.value)} className="h-9" />
+                <Label htmlFor="data" className="text-xs font-medium text-muted-foreground">Aggiunta il</Label>
+                <Input id="data" type="date" value={aggiuntaIl} onChange={(e) => setAggiuntaIl(e.target.value)} className="h-10 rounded-xl bg-muted/30 border-border/60 focus:bg-card" />
               </div>
               {dataConferma && (
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Confermata il</Label>
-                  <div className="flex items-center px-3 py-2 rounded-md bg-muted/40 border border-border text-sm">
+                  <Label className="text-xs font-medium text-muted-foreground">Confermata il</Label>
+                  <div className="flex items-center px-4 py-2.5 rounded-xl bg-muted/30 border border-border/60 text-sm">
                     {formatDateDisplay(dataConferma)}
                   </div>
                 </div>
@@ -306,11 +303,11 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
             </div>
           </div>
 
-          <div className="border-t border-border" />
+          <div className="border-t border-border/40" />
 
           {/* Sezione: Note */}
           <div className="space-y-3">
-            <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               <StickyNote className="w-3.5 h-3.5" />
               Note
             </div>
@@ -318,15 +315,15 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Aggiungi note o osservazioni sulla strategia..."
-              className="min-h-[80px] resize-none text-sm"
+              className="min-h-[80px] resize-none text-sm rounded-xl bg-muted/30 border-border/60 focus:bg-card"
             />
           </div>
         </div>
 
-        <DialogFooter className="px-6 py-4 border-t border-border bg-muted/20 flex-col sm:flex-row gap-2">
+        <DialogFooter className="px-6 py-4 border-t border-border/40 bg-muted/20 flex-col sm:flex-row gap-2">
           <div className="flex gap-2 w-full sm:w-auto">
             {isEdit && (
-              <Button variant="destructive" size="sm" onClick={() => onDelete(strategy!.id)} className="flex-1 sm:flex-none">
+              <Button variant="destructive" size="sm" onClick={() => onDelete(strategy!.id)} className="flex-1 sm:flex-none rounded-xl">
                 Elimina
               </Button>
             )}
@@ -334,7 +331,7 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-1.5 text-muted-foreground flex-1 sm:flex-none"
+                className="gap-1.5 text-muted-foreground flex-1 sm:flex-none rounded-xl"
                 onClick={() => { handleStatoChange("Archiviata"); }}
               >
                 <Archive className="w-3.5 h-3.5" />
@@ -343,11 +340,11 @@ const StrategyModal = ({ open, onOpenChange, strategy, onSave, onDelete, strateg
             )}
           </div>
           <div className="flex gap-2 ml-auto">
-            <Button variant="outline" size="sm" onClick={handleVaBene} className="gap-1">
+            <Button variant="outline" size="sm" onClick={handleVaBene} className="gap-1 rounded-xl">
               ✅ Va bene !
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)}>Annulla</Button>
-            <Button size="sm" onClick={handleSave}>Salva</Button>
+            <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)} className="rounded-xl">Annulla</Button>
+            <Button size="sm" onClick={handleSave} className="rounded-xl shadow-[0_2px_12px_rgba(0,122,255,0.25)]">Salva</Button>
           </div>
         </DialogFooter>
       </DialogContent>
