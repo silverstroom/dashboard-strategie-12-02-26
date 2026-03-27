@@ -1,5 +1,5 @@
 import { Strategy, StrategyStatus } from "@/data/strategies";
-import { Plus, Copy, AlertTriangle, PauseCircle, Star, Archive, Check, Globe, Share2 } from "lucide-react";
+import { Plus, Copy, AlertTriangle, PauseCircle, Star, Archive, Check, Globe, Share2, Send, PenLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface StrategyTableProps {
@@ -92,14 +92,30 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
     return <span>{formatImporto(strategy.importo_strategia)}</span>;
   };
 
-  const canConfirm = (s: Strategy) => s.stato_strategia !== "Va bene !" && s.stato_strategia !== "Archiviata";
-  const canArchive = (s: Strategy) => s.stato_strategia === "Va bene !";
-
   const QuickActions = ({ strategy }: { strategy: Strategy }) => {
     if (!onQuickAction) return null;
+    const stato = strategy.stato_strategia;
     return (
-      <div className="flex items-center gap-1">
-        {canConfirm(strategy) && (
+      <div className="flex items-center gap-0.5">
+        {stato !== "In attesa/corretta" && stato !== "Archiviata" && (
+          <button
+            className="p-1.5 rounded-xl hover:bg-urgent-bg text-muted-foreground hover:text-urgent-foreground transition-all duration-200"
+            title="In revisione"
+            onClick={(e) => { e.stopPropagation(); onQuickAction(strategy, "In attesa/corretta"); }}
+          >
+            <PenLine className="w-4 h-4" />
+          </button>
+        )}
+        {stato !== "Pronta per la presentazione" && stato !== "Archiviata" && (
+          <button
+            className="p-1.5 rounded-xl hover:bg-status-pronta-bg text-muted-foreground hover:text-status-pronta transition-all duration-200"
+            title="Pronta per la presentazione"
+            onClick={(e) => { e.stopPropagation(); onQuickAction(strategy, "Pronta per la presentazione"); }}
+          >
+            <Send className="w-4 h-4" />
+          </button>
+        )}
+        {stato !== "Va bene !" && stato !== "Archiviata" && (
           <button
             className="p-1.5 rounded-xl hover:bg-status-ok-bg text-muted-foreground hover:text-status-ok transition-all duration-200"
             title="Conferma (Va bene !)"
@@ -108,7 +124,7 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
             <Check className="w-4 h-4" />
           </button>
         )}
-        {canArchive(strategy) && (
+        {stato === "Va bene !" && (
           <button
             className="p-1.5 rounded-xl hover:bg-muted text-muted-foreground hover:text-foreground transition-all duration-200"
             title="Archivia"
