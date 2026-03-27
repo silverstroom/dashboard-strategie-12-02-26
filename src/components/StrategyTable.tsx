@@ -1,5 +1,5 @@
 import { Strategy, StrategyStatus } from "@/data/strategies";
-import { Plus, Copy, AlertTriangle, PauseCircle, Star, Archive, Check, Globe, Share2 } from "lucide-react";
+import { Plus, Copy, AlertTriangle, PauseCircle, Star, Archive, Check, Globe, Share2, Send, PenLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface StrategyTableProps {
