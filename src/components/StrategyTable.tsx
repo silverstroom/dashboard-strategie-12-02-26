@@ -124,7 +124,7 @@ const StrategyTable = ({ strategies, activeFilter, onEdit, onCreate, onCopy, onQ
             <Check className="w-4 h-4" />
           </button>
         )}
-        {stato === "Va bene !" && (
+        {(stato === "Va bene !" || stato === "In attesa/corretta") && (
           <button
             className="p-1.5 rounded-xl hover:bg-muted text-muted-foreground hover:text-foreground transition-all duration-200"
             title="Archivia"
